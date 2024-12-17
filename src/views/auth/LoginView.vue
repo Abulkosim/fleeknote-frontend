@@ -1,0 +1,215 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { spacing, typography, colors, shadows, radii, animations, focusRings } from '@/design/tokens'
+
+const auth = useAuthStore()
+const router = useRouter()
+
+const form = ref({
+  email: '',
+  password: ''
+})
+
+const isLoading = ref(false)
+const error = ref('')
+
+async function handleSubmit() {
+  try {
+    isLoading.value = true
+    error.value = ''
+    await auth.login(form.value.email, form.value.password)
+    router.push('/notes')
+  } catch (err) {
+    error.value = 'Invalid email or password'
+  } finally {
+    isLoading.value = false
+  }
+}
+</script>
+
+<template>
+  <div class="auth-page">
+    <div class="auth-container">
+      <div class="auth-header">
+        <h1>Welcome back</h1>
+        <p>Continue your writing journey</p>
+      </div>
+
+      <form @submit.prevent="handleSubmit" class="auth-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input 
+            id="email"
+            v-model="form.email"
+            type="email"
+            required
+            placeholder="you@example.com"
+          />
+        </div>
+
+        <div class="form-group">
+          <div class="password-header">
+            <label for="password">Password</label>
+            <router-link to="/forgot-password" class="forgot-link">
+              Forgot password?
+            </router-link>
+          </div>
+          <input 
+            id="password"
+            v-model="form.password"
+            type="password"
+            required
+            placeholder="Enter your password"
+          />
+        </div>
+
+        <p v-if="error" class="error-message">{{ error }}</p>
+
+        <button 
+          type="submit" 
+          class="submit-btn"
+          :disabled="isLoading"
+        >
+          <span v-if="isLoading">Signing in...</span>
+          <span v-else>Sign in</span>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>
+          Don't have an account?
+          <router-link to="/signup" class="link">Sign up</router-link>
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: v-bind('spacing.md');
+  background: v-bind('colors.neutral[50]');
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border-radius: v-bind('radii.lg');
+  box-shadow: v-bind('shadows.lg');
+  padding: v-bind('spacing.xl');
+  animation: fadeIn 0.5s ease-out;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: v-bind('spacing.xl');
+}
+
+.auth-header h1 {
+  font-size: v-bind('typography.sizes["2xl"]');
+  font-weight: 600;
+  color: v-bind('colors.neutral[800]');
+  margin-bottom: v-bind('spacing.xs');
+}
+
+.auth-header p {
+  color: v-bind('colors.neutral[500]');
+  font-size: v-bind('typography.sizes.base');
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: v-bind('spacing.lg');
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: v-bind('spacing.xs');
+}
+
+.password-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+label {
+  font-size: v-bind('typography.sizes.sm');
+  font-weight: 500;
+  color: v-bind('colors.neutral[700]');
+}
+
+input {
+  padding: v-bind('spacing.md');
+  border: 1px solid v-bind('colors.neutral[200]');
+  border-radius: v-bind('radii.base');
+  font-size: v-bind('typography.sizes.base');
+  color: v-bind('colors.neutral[800]');
+  transition: v-bind('animations.transitions.base');
+}
+
+input:focus {
+  outline: none;
+  border-color: v-bind('colors.primary[500]');
+  box-shadow: v-bind('focusRings.base');
+}
+
+.submit-btn {
+  padding: v-bind('spacing.md');
+  background: v-bind('colors.primary[600]');
+  color: white;
+  border: none;
+  border-radius: v-bind('radii.base');
+  font-weight: 500;
+  cursor: pointer;
+  transition: v-bind('animations.transitions.base');
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: v-bind('colors.primary[700]');
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: v-bind('typography.sizes.sm');
+  margin-top: v-bind('spacing.xs');
+}
+
+.auth-footer {
+  margin-top: v-bind('spacing.xl');
+  text-align: center;
+  color: v-bind('colors.neutral[600]');
+  font-size: v-bind('typography.sizes.sm');
+}
+
+.link, .forgot-link {
+  color: v-bind('colors.primary[600]');
+  text-decoration: none;
+  font-weight: 500;
+  transition: v-bind('animations.transitions.base');
+}
+
+.link:hover, .forgot-link:hover {
+  color: v-bind('colors.primary[700]');
+  text-decoration: underline;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style> 
