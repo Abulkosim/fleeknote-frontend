@@ -15,7 +15,7 @@ function handleLogout() {
 <template>
   <header class="header">
     <div class="header-content">
-      <router-link to="/" class="logo">FleetNote</router-link>
+      <router-link to="/" class="logo">FleekNote</router-link>
       
       <div v-if="auth.isAuthenticated" class="nav">
         <button @click="handleLogout" class="logout-btn">Logout</button>
