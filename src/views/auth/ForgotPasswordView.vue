@@ -11,7 +11,7 @@ async function handleSubmit() {
     try {
         isLoading.value = true
         error.value = ''
-        await new Promise(resolve => setTimeout(resolve, 1000)) 
+        await new Promise(resolve => setTimeout(resolve, 1000))
         isEmailSent.value = true
     } catch (err) {
         error.value = 'Failed to send reset email'
@@ -144,6 +144,7 @@ input:focus {
     border: none;
     border-radius: v-bind('radii.base');
     font-weight: 500;
+    font-size: v-bind('typography.sizes.base');
     cursor: pointer;
     transition: v-bind('animations.transitions.base');
 }

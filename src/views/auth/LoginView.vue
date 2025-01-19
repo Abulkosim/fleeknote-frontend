@@ -40,13 +40,7 @@ async function handleSubmit() {
       <form @submit.prevent="handleSubmit" class="auth-form">
         <div class="form-group">
           <label for="email">Email</label>
-          <input 
-            id="email"
-            v-model="form.email"
-            type="email"
-            required
-            placeholder="you@example.com"
-          />
+          <input id="email" v-model="form.email" type="email" required placeholder="you@example.com" />
         </div>
 
         <div class="form-group">
@@ -56,22 +50,12 @@ async function handleSubmit() {
               Forgot password?
             </router-link>
           </div>
-          <input 
-            id="password"
-            v-model="form.password"
-            type="password"
-            required
-            placeholder="Enter your password"
-          />
+          <input id="password" v-model="form.password" type="password" required placeholder="Enter your password" />
         </div>
 
         <p v-if="error" class="error-message">{{ error }}</p>
 
-        <button 
-          type="submit" 
-          class="submit-btn"
-          :disabled="isLoading"
-        >
+        <button type="submit" class="submit-btn" :disabled="isLoading">
           <span v-if="isLoading">Signing in...</span>
           <span v-else>Sign in</span>
         </button>
@@ -170,6 +154,7 @@ input:focus {
   border: none;
   border-radius: v-bind('radii.base');
   font-weight: 500;
+  font-size: v-bind('typography.sizes.base');
   cursor: pointer;
   transition: v-bind('animations.transitions.base');
 }
@@ -196,20 +181,29 @@ input:focus {
   font-size: v-bind('typography.sizes.sm');
 }
 
-.link, .forgot-link {
+.link,
+.forgot-link {
   color: v-bind('colors.primary[600]');
   text-decoration: none;
   font-weight: 500;
   transition: v-bind('animations.transitions.base');
 }
 
-.link:hover, .forgot-link:hover {
+.link:hover,
+.forgot-link:hover {
   color: v-bind('colors.primary[700]');
   text-decoration: underline;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-</style> 
+</style>

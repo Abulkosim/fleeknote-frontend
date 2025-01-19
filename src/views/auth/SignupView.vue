@@ -156,6 +156,7 @@ input:focus {
     border: none;
     border-radius: v-bind('radii.base');
     font-weight: 500;
+    font-size: v-bind('typography.sizes.base');
     cursor: pointer;
     transition: v-bind('animations.transitions.base');
 }

@@ -48,10 +48,9 @@ const router = createRouter({
   ]
 })
 
-// Navigation guards
 router.beforeEach((to, from, next) => {
   const auth = useAuthStore()
-  
+
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
     next({ name: 'login' })
   } else if (to.meta.requiresGuest && auth.isAuthenticated) {

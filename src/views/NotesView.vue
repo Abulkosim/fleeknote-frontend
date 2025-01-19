@@ -42,7 +42,7 @@ async function autoSave() {
 
     saveTimeout.value = setTimeout(async () => {
         try {
-            
+
             if (isNewNote.value) {
                 const newNote = await notesStore.createNote(
                     currentNote.value.title,
@@ -222,6 +222,8 @@ watch(() => currentNote.value.content, (newVal) => {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 </style>

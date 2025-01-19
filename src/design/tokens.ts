@@ -17,7 +17,7 @@ export const colors = {
     200: '#e2e8f0',
     300: '#cbd5e1',
     400: '#94a3b8',
-    500: '#64748b', 
+    500: '#64748b',
     600: '#475569',
     700: '#334155',
     800: '#1e293b',
@@ -45,7 +45,7 @@ export const typography = {
     base: '1rem',
     lg: '1.125rem',
     xl: '1.25rem',
-    '2xl': '1.75rem' 
+    '2xl': '1.75rem'
   },
   lineHeights: {
     tight: '1.2',
@@ -82,5 +82,5 @@ export const animations = {
 }
 
 export const focusRings = {
-  base: '0 0 0 2px rgba(209, 213, 219, 0.3), 0 0 0 0.5px rgba(55, 65, 81, 0.3)',
+  base: '0 0 0 2px rgba(128, 128, 128, 0.25)',
 } 

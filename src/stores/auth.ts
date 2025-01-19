@@ -21,11 +21,11 @@ export const useAuthStore = defineStore('auth', () => {
                 email,
                 password
             })
-            
+
             user.value = data.user
             token.value = data.token
             localStorage.clear()
-            localStorage.setItem('token', data.token)            
+            localStorage.setItem('token', data.token)
         } catch (err: any) {
             error.value = err.response?.data?.message || 'Login failed'
             throw error.value
@@ -39,7 +39,7 @@ export const useAuthStore = defineStore('auth', () => {
                 email,
                 password
             })
-            
+
             user.value = data.user
             token.value = data.token
             localStorage.clear()
@@ -98,7 +98,6 @@ export const useAuthStore = defineStore('auth', () => {
         signup,
         logout,
         forgotPassword,
-        resetPassword,
-        loadUser
+        resetPassword
     }
 }) 
