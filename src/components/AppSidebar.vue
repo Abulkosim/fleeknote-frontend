@@ -3,6 +3,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useNotesStore } from '@/stores/notes'
 import { useRouter } from 'vue-router'
 import { colors, spacing, typography, shadows, radii, animations } from '@/design/tokens'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import { PhNotePencil } from "@phosphor-icons/vue";
 
 const notesStore = useNotesStore()
 const router = useRouter()
@@ -36,21 +38,18 @@ onUnmounted(() => {
     <aside :class="['sidebar', { 'sidebar-open': isSidebarOpen }]">
         <div class="sidebar-header">
             <h2 class="sidebar-title">Notes</h2>
-            <button @click="createNewNote" class="new-note-btn">New</button>
+            <div class="new-note">
+                <PhNotePencil @click="createNewNote" class="new-note-icon" :size="20" />
+            </div>
         </div>
 
         <div v-if="notesStore.isLoading" class="notes-loading">
-            Loading notes...
+            <LoadingSpinner size="md" />
         </div>
-        
+
         <div v-else class="notes-list">
-            <div 
-                v-for="note in notesStore.notes" 
-                :key="note._id" 
-                class="note-item"
-                :class="{ active: $route.params.id === note._id }"
-                @click="router.push(`/notes/${note._id}`)"
-            >
+            <div v-for="note in notesStore.notes" :key="note._id" class="note-item"
+                :class="{ active: $route.params.id === note._id }" @click="router.push(`/notes/${note._id}`)">
                 {{ note.title || 'Untitled Note' }}
             </div>
         </div>
@@ -64,7 +63,7 @@ onUnmounted(() => {
     background: white;
     border-radius: v-bind('radii.md');
     box-shadow: v-bind('shadows.base');
-    padding: v-bind('spacing.lg');
+    padding: v-bind('spacing.md');
     transition: v-bind('animations.transitions.smooth');
 }
 
@@ -100,19 +99,23 @@ onUnmounted(() => {
     letter-spacing: 0.05em;
 }
 
-.new-note-btn {
-    padding: v-bind('spacing.sm') v-bind('spacing.md');
-    background: v-bind('colors.primary[600]');
-    color: white;
-    border: none;
-    border-radius: v-bind('radii.base');
+.new-note {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    font-size: v-bind('typography.sizes.sm');
+    border-radius: 50%;
     transition: v-bind('animations.transitions.base');
 }
 
-.new-note-btn:hover {
-    background: v-bind('colors.primary[700]');
+.new-note:hover {
+    background: v-bind('colors.neutral[100]');
+}
+
+.new-note-icon {
+    fill: v-bind('colors.neutral[500]');
 }
 
 .notes-list {
@@ -122,7 +125,7 @@ onUnmounted(() => {
 }
 
 .note-item {
-    padding: v-bind('spacing.md');
+    padding: v-bind('spacing.sm');
     cursor: pointer;
     transition: v-bind('animations.transitions.base');
     border-radius: v-bind('radii.base');
@@ -177,8 +180,13 @@ onUnmounted(() => {
     left: 0;
 }
 
-.hamburger::before { top: -6px; }
-.hamburger::after { bottom: -6px; }
+.hamburger::before {
+    top: -6px;
+}
+
+.hamburger::after {
+    bottom: -6px;
+}
 
 .sr-only {
     position: absolute;
@@ -196,4 +204,4 @@ onUnmounted(() => {
     color: v-bind('colors.neutral[500]');
     text-align: center;
 }
-</style> 
+</style>

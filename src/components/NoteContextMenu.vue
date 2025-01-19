@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useNotesStore } from '@/stores/notes'
 import { useRouter } from 'vue-router'
 import { colors, spacing, typography, shadows, radii, animations } from '@/design/tokens'
+import { PhPencilLine, PhGlobe, PhTrash } from "@phosphor-icons/vue"
 
 const props = defineProps<{
     noteId: string
@@ -43,20 +44,17 @@ function handleEdit() {
 </script>
 
 <template>
-    <div v-if="show" 
-         class="context-menu"
-         :style="{ top: `${position.y}px`, left: `${position.x}px` }"
-         @click.stop>
+    <div v-if="show" class="context-menu" :style="{ top: `${position.y}px`, left: `${position.x}px` }" @click.stop>
         <button class="menu-item" @click="handleEdit">
-            <span class="icon">✏️</span>
+            <PhPencilLine :size="20" class="menu-item-icon" />
             Edit
         </button>
         <button class="menu-item" @click="handleTogglePublish">
-            <span class="icon">🌐</span>
+            <PhGlobe :size="20" class="menu-item-icon" />
             {{ isPublic ? 'Make Private' : 'Publish' }}
         </button>
         <button class="menu-item delete" @click="handleDelete">
-            <span class="icon">🗑️</span>
+            <PhTrash :size="20" class="menu-item-icon" />
             Delete
         </button>
     </div>
@@ -87,6 +85,10 @@ function handleEdit() {
     transition: v-bind('animations.transitions.base');
 }
 
+.menu-item-icon {
+    fill: v-bind('colors.neutral[700]');
+}
+
 .menu-item:hover {
     background: v-bind('colors.neutral[100]');
 }
@@ -98,8 +100,4 @@ function handleEdit() {
 .menu-item.delete:hover {
     background: v-bind('colors.red[50]');
 }
-
-.icon {
-    font-size: v-bind('typography.sizes.lg');
-}
-</style> 
+</style>

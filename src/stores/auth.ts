@@ -78,7 +78,6 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('token')
     }
 
-    // Load user data if token exists
     async function loadUser() {
         if (token.value) {
             try {

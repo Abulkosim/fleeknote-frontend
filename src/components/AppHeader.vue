@@ -16,7 +16,7 @@ function handleLogout() {
   <header class="header">
     <div class="header-content">
       <router-link to="/" class="logo">FleekNote</router-link>
-      
+
       <div v-if="auth.isAuthenticated" class="nav">
         <button @click="handleLogout" class="logout-btn">Logout</button>
       </div>
@@ -34,6 +34,7 @@ function handleLogout() {
   max-width: 1400px;
   margin: 0 auto;
   padding: v-bind('spacing.md') v-bind('spacing.lg');
+  height: 64px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -63,4 +64,4 @@ function handleLogout() {
   border-color: v-bind('colors.neutral[300]');
   color: v-bind('colors.neutral[800]');
 }
-</style> 
+</style>

@@ -1,25 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { spacing, typography, colors, shadows, radii, animations, focusRings } from '@/design/tokens'
+import { PhPencilLine, PhDatabase, PhGlobe } from "@phosphor-icons/vue"
 
 const note = ref({
     title: localStorage.getItem('public-note-title') || '',
     content: localStorage.getItem('public-note-content') || ''
 })
 
+let debounceTimer = null
+
 const auth = useAuthStore()
 const router = useRouter()
 
 function saveToLocalStorage() {
-    localStorage.setItem('public-note-title', note.value.title)
-    localStorage.setItem('public-note-content', note.value.content)
+    if (debounceTimer) clearTimeout(debounceTimer)
+
+    debounceTimer = setTimeout(() => {
+        localStorage.setItem('public-note-title', note.value.title)
+        localStorage.setItem('public-note-content', note.value.content)
+    }, 1000)
 }
 
 function handleLogin() {
     router.push('/login')
 }
+
+watch(note, saveToLocalStorage, { deep: true })
 </script>
 
 <template>
@@ -30,6 +39,9 @@ function handleLogin() {
                 <p class="subtitle">A minimalist note-taking app for focused writing and seamless sharing.</p>
                 <button v-if="!auth.isAuthenticated" @click="handleLogin" class="login-btn">
                     Get Started
+                </button>
+                <button v-else class="login-btn" @click="router.push('/notes')">
+                    Go to Notes
                 </button>
             </div>
         </div>
@@ -43,17 +55,17 @@ function handleLogin() {
             </div>
             <div class="features">
                 <div class="feature">
-                    <div class="feature-icon">✍️</div>
+                    <PhPencilLine :size="32" class="feature-icon" />
                     <h3>Distraction-Free Writing</h3>
                     <p>Focus on your thoughts with our clean, minimal interface.</p>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">🔄</div>
+                    <PhDatabase :size="32" class="feature-icon" />
                     <h3>Auto-Saving</h3>
                     <p>Never lose your work with automatic local storage.</p>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">🌐</div>
+                    <PhGlobe :size="32" class="feature-icon" />
                     <h3>Share Instantly</h3>
                     <p>One click to share your notes with the world.</p>
                 </div>
@@ -72,6 +84,9 @@ function handleLogin() {
 .home {
     min-height: 100vh;
     background: v-bind('colors.neutral[100]');
+    overflow: hidden;
+    position: relxative;
+    z-index: 1;
 }
 
 .hero {
@@ -103,26 +118,28 @@ function handleLogin() {
 
 .login-btn {
     padding: v-bind('spacing.md') v-bind('spacing.xl');
-    background: v-bind('colors.primary[600]');
+    background-color: v-bind('colors.neutral[800]');
     color: white;
-    border-radius: v-bind('radii.base');
     border: none;
+    border-radius: v-bind('radii.md');
+    font-size: v-bind('typography.sizes.lg');
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
-    font-size: v-bind('typography.sizes.base');
+    transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .login-btn:hover {
-    background: v-bind('colors.primary[700]');
-    transform: translateY(-1px);
-    box-shadow: v-bind('shadows.md');
+    background-color: v-bind('colors.neutral[700]');
+}
+
+.login-btn:active {
+    background-color: v-bind('colors.neutral[900]');
 }
 
 .editor-section {
     max-width: 1200px;
     margin: 0 auto;
-    padding: v-bind('spacing["2xl"]') v-bind('spacing.xl');
+    padding: v-bind('spacing.xl');
     display: grid;
     grid-template-columns: 1fr 300px;
     gap: v-bind('spacing.xl');
@@ -145,7 +162,6 @@ function handleLogin() {
     margin-bottom: v-bind('spacing.lg');
     padding: v-bind('spacing.md');
     color: v-bind('colors.neutral[800]');
-    letter-spacing: -0.01em;
     border-radius: v-bind('radii.base');
     transition: v-bind('animations.transitions.smooth');
 }
@@ -186,6 +202,7 @@ function handleLogin() {
     display: flex;
     flex-direction: column;
     gap: v-bind('spacing.xl');
+    padding: v-bind('spacing.md')
 }
 
 .feature {
@@ -193,9 +210,8 @@ function handleLogin() {
 }
 
 .feature-icon {
-    font-size: 2rem;
+    fill: v-bind('colors.neutral[600]');
     margin-bottom: v-bind('spacing.sm');
-    opacity: 0.9;
 }
 
 .feature h3 {

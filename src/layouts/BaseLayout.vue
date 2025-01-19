@@ -1,19 +1,26 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { computed } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
 import AppHeader from '../components/AppHeader.vue'
 import AppSidebar from '../components/AppSidebar.vue'
 import { useAuthStore } from '../stores/auth'
 import { colors, spacing, radii, shadows } from '../design/tokens'
 
 const auth = useAuthStore()
+
+const route = useRoute()
+
+const showSidebar = computed(() => {
+  return auth.isAuthenticated && route.path !== '/'
+})
 </script>
 
 <template>
   <div class="app-layout">
     <AppHeader />
-    
+
     <main class="app-main">
-      <AppSidebar v-if="auth.isAuthenticated" />
+      <AppSidebar v-if="showSidebar" />
       <div class="app-content">
         <RouterView />
       </div>
@@ -43,4 +50,4 @@ const auth = useAuthStore()
   border: 1px solid v-bind('colors.neutral[200]');
   padding: v-bind('spacing.lg');
 }
-</style> 
+</style>

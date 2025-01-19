@@ -11,8 +11,7 @@ async function handleSubmit() {
     try {
         isLoading.value = true
         error.value = ''
-        // TODO: Implement password reset functionality
-        await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000)) 
         isEmailSent.value = true
     } catch (err) {
         error.value = 'Failed to send reset email'

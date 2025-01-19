@@ -1,5 +1,4 @@
 export const colors = {
-  // More refined neutral palette with warmer grays
   neutral: {
     50: '#f9fafb',
     100: '#f3f4f6',
@@ -12,14 +11,13 @@ export const colors = {
     800: '#1f2937',
     900: '#111827'
   },
-  // Sophisticated accent color
   primary: {
     50: '#f8fafc',
     100: '#f1f5f9',
     200: '#e2e8f0',
     300: '#cbd5e1',
     400: '#94a3b8',
-    500: '#64748b',  // Main brand color - refined slate
+    500: '#64748b', 
     600: '#475569',
     700: '#334155',
     800: '#1e293b',
@@ -47,7 +45,7 @@ export const typography = {
     base: '1rem',
     lg: '1.125rem',
     xl: '1.25rem',
-    '2xl': '1.75rem' // Slightly smaller for more refinement
+    '2xl': '1.75rem' 
   },
   lineHeights: {
     tight: '1.2',
@@ -56,7 +54,6 @@ export const typography = {
   }
 }
 
-// Update shadows for more subtlety
 export const shadows = {
   sm: '0 1px 2px rgba(0, 0, 0, 0.03)',
   base: '0 1px 3px rgba(0, 0, 0, 0.05)',
@@ -84,8 +81,6 @@ export const animations = {
   }
 }
 
-// Add focus styles
 export const focusRings = {
-  base: '0 0 0 2px white, 0 0 0 4px rgba(99, 102, 241, 0.3)',
-  dark: '0 0 0 2px #1f2937, 0 0 0 4px rgba(99, 102, 241, 0.3)'
+  base: '0 0 0 2px rgba(209, 213, 219, 0.3), 0 0 0 0.5px rgba(55, 65, 81, 0.3)',
 } 

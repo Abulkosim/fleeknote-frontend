@@ -20,7 +20,6 @@ const isLoading = ref(false)
 const saveTimeout = ref<number | null>(null)
 const isNewNote = ref(true)
 
-// Load existing note if ID is in route
 onMounted(async () => {
     const noteId = route.params.id
     if (noteId) {
@@ -37,7 +36,6 @@ onMounted(async () => {
     }
 })
 
-// Auto-save functionality
 async function autoSave() {
     if (saveTimeout.value) clearTimeout(saveTimeout.value)
     isSaving.value = true
@@ -46,17 +44,14 @@ async function autoSave() {
         try {
             
             if (isNewNote.value) {
-                // Create new note
                 const newNote = await notesStore.createNote(
                     currentNote.value.title,
                     currentNote.value.content
                 )
                 currentNote.value = newNote
                 isNewNote.value = false
-                // Update URL to include note ID
                 router.replace(`/notes/${newNote._id}`)
             } else {
-                // Update existing note
                 await notesStore.updateNote({
                     _id: currentNote.value._id,
                     title: currentNote.value.title,
@@ -72,7 +67,6 @@ async function autoSave() {
 watch(() => currentNote.value.title, autoSave)
 watch(() => currentNote.value.content, autoSave)
 
-// Only trigger auto-save when there's actual content
 watch(() => currentNote.value.title, (newVal) => {
     if (newVal.trim() !== '') autoSave()
 })
