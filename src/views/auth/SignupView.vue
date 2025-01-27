@@ -2,10 +2,12 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useToastStore } from '@/stores/toast'
 import { spacing, typography, colors, shadows, radii, animations, focusRings } from '@/design/tokens'
 
 const auth = useAuthStore()
 const router = useRouter()
+const toast = useToastStore()
 
 const form = ref({
     username: '',
@@ -24,6 +26,7 @@ async function handleSubmit() {
         router.push('/notes')
     } catch (err: any) {
         error.value = err.message || 'Failed to create account'
+        toast.addToast(error.value, 'error')
     } finally {
         isLoading.value = false
     }
@@ -54,8 +57,6 @@ async function handleSubmit() {
                     <input id="password" v-model="form.password" type="password" required
                         placeholder="Create a password" />
                 </div>
-
-                <p v-if="error" class="error-message">{{ error }}</p>
 
                 <button type="submit" class="submit-btn" :disabled="isLoading">
                     <span v-if="isLoading">Creating account...</span>
@@ -168,12 +169,6 @@ input:focus {
 .submit-btn:disabled {
     opacity: 0.7;
     cursor: not-allowed;
-}
-
-.error-message {
-    color: #dc2626;
-    font-size: v-bind('typography.sizes.sm');
-    margin-top: v-bind('spacing.xs');
 }
 
 .auth-footer {

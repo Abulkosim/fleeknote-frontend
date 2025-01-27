@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useToastStore } from '@/stores/toast'
 import { spacing, typography, colors, shadows, radii, animations, focusRings } from '@/design/tokens'
 
 const auth = useAuthStore()
 const router = useRouter()
+const toast = useToastStore()
 
 const form = ref({
   email: '',
@@ -22,7 +24,8 @@ async function handleSubmit() {
     await auth.login(form.value.email, form.value.password)
     router.push('/notes')
   } catch (err) {
-    error.value = 'Invalid email or password'
+    error.value = (err as Error).message || 'Failed to sign in'
+    toast.addToast(error.value, 'success')
   } finally {
     isLoading.value = false
   }
@@ -52,8 +55,6 @@ async function handleSubmit() {
           </div>
           <input id="password" v-model="form.password" type="password" required placeholder="Enter your password" />
         </div>
-
-        <p v-if="error" class="error-message">{{ error }}</p>
 
         <button type="submit" class="submit-btn" :disabled="isLoading">
           <span v-if="isLoading">Signing in...</span>
@@ -166,12 +167,6 @@ input:focus {
 .submit-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
-}
-
-.error-message {
-  color: #dc2626;
-  font-size: v-bind('typography.sizes.sm');
-  margin-top: v-bind('spacing.xs');
 }
 
 .auth-footer {

@@ -1,9 +1,25 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import Toast from '@/components/Toast.vue'
 </script>
 
 <template>
-  <RouterView />
+  <div class="app-container">
+    <RouterView />
+    <Toast />
+  </div>
 </template>
 
-<style scoped></style>
+<style>
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.app-container {
+  min-height: 100vh;
+  position: relative;
+}
+</style>

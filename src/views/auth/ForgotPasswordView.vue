@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useToastStore } from '@/stores/toast'
+import { useAuthStore } from '@/stores/auth'
 import { spacing, typography, colors, shadows, radii, animations, focusRings } from '@/design/tokens'
 
+const auth = useAuthStore()
 const email = ref('')
 const isLoading = ref(false)
 const error = ref('')
 const isEmailSent = ref(false)
+const toast = useToastStore()
 
 async function handleSubmit() {
     try {
         isLoading.value = true
         error.value = ''
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        await auth.forgotPassword(email.value)
         isEmailSent.value = true
     } catch (err) {
         error.value = 'Failed to send reset email'
+        toast.addToast(error.value, 'error')
     } finally {
         isLoading.value = false
     }
@@ -35,8 +40,6 @@ async function handleSubmit() {
                         <label for="email">Email address</label>
                         <input id="email" v-model="email" type="email" required placeholder="Enter your email" />
                     </div>
-
-                    <p v-if="error" class="error-message">{{ error }}</p>
 
                     <button type="submit" class="submit-btn" :disabled="isLoading">
                         <span v-if="isLoading">Sending...</span>
@@ -156,12 +159,6 @@ input:focus {
 .submit-btn:disabled {
     opacity: 0.7;
     cursor: not-allowed;
-}
-
-.error-message {
-    color: #dc2626;
-    font-size: v-bind('typography.sizes.sm');
-    margin-top: v-bind('spacing.xs');
 }
 
 .auth-footer {
