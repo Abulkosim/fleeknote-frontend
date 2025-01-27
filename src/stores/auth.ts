@@ -61,8 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     async function resetPassword(token: string, password: string) {
         try {
-            await apiClient.post('/auth/reset-password', {
-                token,
+            await apiClient.post(`/auth/reset-password/${token}`, {
                 password
             })
         } catch (error) {
