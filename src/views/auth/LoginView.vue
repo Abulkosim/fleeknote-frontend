@@ -25,7 +25,7 @@ async function handleSubmit() {
     router.push('/notes')
   } catch (err) {
     error.value = (err as Error).message || 'Failed to sign in'
-    toast.addToast(error.value, 'success')
+    toast.addToast(error.value, 'error')
   } finally {
     isLoading.value = false
   }
