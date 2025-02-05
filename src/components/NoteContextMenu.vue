@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useNotesStore } from '@/stores/notes'
 import { useRouter } from 'vue-router'
-import { colors, spacing, typography, shadows, radii, animations } from '@/design/tokens'
+import { colors, spacing, shadows, radii, animations } from '@/design/tokens'
 import { PhPencilLine, PhGlobe, PhTrash } from "@phosphor-icons/vue"
 
 const props = defineProps<{

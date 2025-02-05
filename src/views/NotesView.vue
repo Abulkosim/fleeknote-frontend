@@ -106,7 +106,6 @@ watch(() => currentNote.value.content, (newVal) => {
 
 <style scoped>
 .notes-layout {
-    min-height: 100vh;
     background: v-bind('colors.neutral[50]');
 }
 
@@ -116,7 +115,6 @@ watch(() => currentNote.value.content, (newVal) => {
     max-width: 1400px;
     margin: 0 auto;
     height: calc(100vh - 64px);
-    /* Adjust based on header height */
 }
 
 .editor {
