@@ -64,15 +64,18 @@ async function autoSave() {
     }, 2000) as unknown as number
 }
 
-watch(() => currentNote.value.title, autoSave)
-watch(() => currentNote.value.content, autoSave)
-
 watch(() => currentNote.value.title, (newVal) => {
     if (newVal.trim() !== '') autoSave()
 })
 
 watch(() => currentNote.value.content, (newVal) => {
     if (newVal.trim() !== '') autoSave()
+})
+
+watch(() => notesStore.currentNote, (newVal) => {
+    if (newVal) {
+        currentNote.value = newVal
+    }
 })
 </script>
 

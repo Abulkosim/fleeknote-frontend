@@ -38,7 +38,6 @@ export const useNotesStore = defineStore('notes', () => {
 
     async function fetchNote(id: string) {
         try {
-            isLoading.value = true
             const { data } = await apiClient.get(`/notes/${id}`)
             const note = {
                 ...data,
@@ -50,8 +49,6 @@ export const useNotesStore = defineStore('notes', () => {
         } catch (err: any) {
             error.value = err.response?.data?.message || 'Failed to fetch note'
             throw error.value
-        } finally {
-            isLoading.value = false
         }
     }
 
@@ -74,7 +71,7 @@ export const useNotesStore = defineStore('notes', () => {
     async function updateNote(updates: Partial<Note>) {
         try {
             const { _id, owner, slug, createdAt, updatedAt, ...updateData } = updates
-            
+
             if (!_id) {
                 throw new Error('Note ID is required for update')
             }
@@ -85,7 +82,7 @@ export const useNotesStore = defineStore('notes', () => {
                 createdAt: new Date(data.createdAt),
                 updatedAt: new Date(data.updatedAt)
             }
-            
+
             const index = notes.value.findIndex(n => n._id === _id)
             if (index !== -1) {
                 notes.value[index] = updatedNote
@@ -105,7 +102,7 @@ export const useNotesStore = defineStore('notes', () => {
                 createdAt: new Date(data.createdAt),
                 updatedAt: new Date(data.updatedAt)
             }
-            
+
             const index = notes.value.findIndex(n => n._id === id)
             if (index !== -1) {
                 notes.value[index] = updatedNote

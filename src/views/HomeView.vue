@@ -273,7 +273,6 @@ watch(note, saveToLocalStorage, { deep: true })
     animation-delay: -7s;
 }
 
-/* Responsive Design */
 @media (max-width: 1200px) {
     .editor-section {
         grid-template-columns: 1fr;

@@ -3,6 +3,7 @@ import { useNotesStore } from '@/stores/notes'
 import { useRouter } from 'vue-router'
 import { colors, spacing, shadows, radii, animations } from '@/design/tokens'
 import { PhPencilLine, PhGlobe, PhTrash } from "@phosphor-icons/vue"
+import { useToastStore } from '@/stores/toast'
 
 const props = defineProps<{
     noteId: string
@@ -14,6 +15,7 @@ const props = defineProps<{
 const emit = defineEmits(['close'])
 const notesStore = useNotesStore()
 const router = useRouter()
+const toast = useToastStore()
 
 async function handleDelete() {
     if (confirm('Are you sure you want to delete this note?')) {

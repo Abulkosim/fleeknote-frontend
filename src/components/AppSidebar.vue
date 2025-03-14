@@ -6,9 +6,11 @@ import { useRouter } from 'vue-router'
 import { colors, spacing, typography, shadows, radii, animations } from '@/design/tokens'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import NoteContextMenu from '@/components/NoteContextMenu.vue'
+import { useToastStore } from '@/stores/toast'
 
 const notesStore = useNotesStore()
 const router = useRouter()
+const toast = useToastStore()
 const isMobile = ref(window.innerWidth < 768)
 const isSidebarOpen = ref(!isMobile.value)
 
@@ -21,8 +23,18 @@ function toggleSidebar() {
     isSidebarOpen.value = !isSidebarOpen.value
 }
 
-async function createNewNote() {
-    router.push('/notes')
+function createNewNote() {
+    notesStore.currentNote = null
+}
+
+async function loadNote(noteId: string) {
+    try {
+        await notesStore.fetchNote(noteId)
+        router.push(`/notes/${noteId}`)
+    } catch (err) {
+        const error = (err as Error).message || 'Failed to load note'
+        toast.addToast(error, 'error')
+    }
 }
 
 onMounted(() => {
@@ -55,7 +67,7 @@ onUnmounted(() => {
 
         <div v-else class="notes-list">
             <div v-for="note in notesStore.notes" :key="note._id" class="note-item"
-                :class="{ active: $route.params.id === note._id }" @click="router.push(`/notes/${note._id}`)">
+                :class="{ active: $route.params.id === note._id }" @click="loadNote(note._id)">
                 <span>{{ note.title || 'Untitled Note' }}</span>
                 <!-- <NoteContextMenu :noteId="note._id" :isPublic="note.isPublic" :show="true"
                     :position="{ x: 0, y: 0 }" /> -->
