@@ -17,9 +17,9 @@ async function handleSubmit() {
         error.value = ''
         await auth.forgotPassword(email.value)
         isEmailSent.value = true
-    } catch (err) {
+    } catch (err: any) {
         error.value = 'Failed to send reset email'
-        toast.addToast(error.value, 'error')
+        toast.addToast(err.response?.data?.message || error.value, 'error')
     } finally {
         isLoading.value = false
     }
