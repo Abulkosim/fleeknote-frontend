@@ -79,11 +79,13 @@ async function autoSave() {
                 notesStore.setCurrentNote(newNote)
                 router.replace(`/notes/${newNote._id}`)
             } else {
-                await notesStore.updateNote({
-                    _id: currentNote.value._id,
-                    title: currentNote.value.title,
-                    content: currentNote.value.content
-                })
+                if (currentNote.value.title !== noteTitle.value || currentNote.value.content !== noteContent.value) {
+                    await notesStore.updateNote({
+                        _id: currentNote.value._id,
+                        title: currentNote.value.title,
+                        content: currentNote.value.content
+                    })
+                }
             }
         } finally {
             isSaving.value = false
