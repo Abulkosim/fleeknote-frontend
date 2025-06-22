@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
@@ -20,7 +21,7 @@ apiClient.interceptors.response.use(
   error => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
-      window.location.href = '/login'
+      useRouter().push('/login')
     }
     return Promise.reject(error)
   }

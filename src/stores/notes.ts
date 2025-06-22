@@ -19,6 +19,18 @@ export const useNotesStore = defineStore('notes', () => {
     const isLoading = ref(false)
     const error = ref('')
 
+    function getCurrentNote() { 
+        return currentNote.value; 
+    }
+
+    function setCurrentNote(note: Note) {
+        currentNote.value = note;
+    }
+
+    function clearCurrentNote() {
+        currentNote.value = null;
+    }
+
     async function fetchNotes() {
         try {
             isLoading.value = true
@@ -126,14 +138,16 @@ export const useNotesStore = defineStore('notes', () => {
 
     return {
         notes,
-        currentNote,
         isLoading,
         error,
+        getCurrentNote,
+        setCurrentNote,
         fetchNotes,
         fetchNote,
         createNote,
         updateNote,
         deleteNote,
-        togglePublish
+        togglePublish,
+        clearCurrentNote
     }
 }) 

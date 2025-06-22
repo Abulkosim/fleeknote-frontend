@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { useNotesStore } from '@/stores/notes'
 import { useRoute, useRouter } from 'vue-router'
 import { spacing, typography, colors, shadows, radii, animations, focusRings } from '@/design/tokens'
@@ -8,48 +8,75 @@ const notesStore = useNotesStore()
 const route = useRoute()
 const router = useRouter()
 
-const currentNote = ref({
-    _id: '',
-    title: '',
-    content: '',
-    lastModified: new Date()
-})
-
 const isSaving = ref(false)
 const isLoading = ref(false)
 const saveTimeout = ref<number | null>(null)
-const isNewNote = ref(true)
+
+const currentNote = computed(() => notesStore.getCurrentNote())
+const noteTitle = computed({
+    get: () => currentNote.value?.title || '',
+    set: (value: string) => {
+        if (currentNote.value) {
+            currentNote.value.title = value
+        }
+    }
+})
+
+const noteContent = computed({
+    get: () => currentNote.value?.content || '',
+    set: (value: string) => {
+        if (currentNote.value) {
+            currentNote.value.content = value
+        }
+    }
+})
+
 
 onMounted(async () => {
     const noteId = route.params.id
     if (noteId) {
         try {
             isLoading.value = true
-            isNewNote.value = false
             const note = await notesStore.fetchNote(noteId as string)
-            currentNote.value = note
+            notesStore.setCurrentNote(note)
         } catch (err) {
             router.push('/notes')
         } finally {
             isLoading.value = false
         }
+    } else {
+        if (!currentNote.value || currentNote.value._id === '') {
+            const emptyNote = {
+                _id: '',
+                title: '',
+                content: '',
+                owner: '',
+                isPublic: false,
+                slug: '',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            }
+            notesStore.setCurrentNote(emptyNote)
+        }
     }
 })
 
 async function autoSave() {
-    if (saveTimeout.value) clearTimeout(saveTimeout.value)
     isSaving.value = true
+
+    if (!currentNote.value) return
+    if (saveTimeout.value) clearTimeout(saveTimeout.value)
 
     saveTimeout.value = setTimeout(async () => {
         try {
+            if (!currentNote.value) return
 
-            if (isNewNote.value) {
+            if (currentNote.value._id === '') {
                 const newNote = await notesStore.createNote(
                     currentNote.value.title,
                     currentNote.value.content
                 )
-                currentNote.value = newNote
-                isNewNote.value = false
+                notesStore.setCurrentNote(newNote)
                 router.replace(`/notes/${newNote._id}`)
             } else {
                 await notesStore.updateNote({
@@ -64,29 +91,23 @@ async function autoSave() {
     }, 2000) as unknown as number
 }
 
-watch(() => currentNote.value.title, (newVal) => {
+watch(() => noteTitle.value, (newVal) => {
     if (newVal.trim() !== '') autoSave()
 })
 
-watch(() => currentNote.value.content, (newVal) => {
+watch(() => noteContent.value, (newVal) => {
     if (newVal.trim() !== '') autoSave()
-})
-
-watch(() => notesStore.currentNote, (newVal) => {
-    if (newVal) {
-        currentNote.value = newVal
-    }
 })
 </script>
 
 <template>
     <div class="notes-layout">
         <div class="notes-container">
-
             <main class="editor">
                 <div class="editor-header">
                     <div class="save-status" :class="{ saving: isSaving }">
-                        {{ isSaving ? 'Saving...' : 'All changes saved' }}
+                        <span v-if="currentNote && currentNote._id !== '' || isSaving">{{ isSaving ? 'Saving...' : 'All changes saved' }}</span>
+                        <span v-else>New Note</span>
                     </div>
                 </div>
 
@@ -95,12 +116,10 @@ watch(() => notesStore.currentNote, (newVal) => {
                     <p>Loading note...</p>
                 </div>
 
-                <div v-else class="editor-content">
-                    <input v-model="currentNote.title" type="text" class="title-input" placeholder="Note title..." />
+                <div v-else-if="currentNote" class="editor-content">
+                    <input v-model="noteTitle" type="text" class="title-input" placeholder="Note title..." />
 
-
-                    <textarea v-model="currentNote.content" class="content-input"
-                        placeholder="Start writing..."></textarea>
+                    <textarea v-model="noteContent" class="content-input" placeholder="Start writing..."></textarea>
                 </div>
             </main>
         </div>

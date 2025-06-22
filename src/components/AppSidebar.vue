@@ -23,13 +23,33 @@ function toggleSidebar() {
     isSidebarOpen.value = !isSidebarOpen.value
 }
 
-function createNewNote() {
-    notesStore.currentNote = null
+async function createNewNote() {
+    if (!router.currentRoute.value.params.id) {
+        return;
+    }
+
+    const emptyNote = {
+        _id: '',
+        title: '',
+        content: '',
+        owner: '',
+        isPublic: false,
+        slug: '',
+        createdAt: new Date(),
+        updatedAt: new Date()
+    }
+    notesStore.setCurrentNote(emptyNote)
+    router.push('/notes')
 }
 
 async function loadNote(noteId: string) {
+    if (router.currentRoute.value.params.id === noteId) {
+        return
+    }
+
     try {
-        await notesStore.fetchNote(noteId)
+        const note = await notesStore.fetchNote(noteId)
+        notesStore.setCurrentNote(note)
         router.push(`/notes/${noteId}`)
     } catch (err) {
         const error = (err as Error).message || 'Failed to load note'
@@ -52,9 +72,12 @@ onUnmounted(() => {
         <div class="sidebar-header">
             <h2 class="sidebar-title">Notes</h2>
             <div class="sidebar-actions">
-                <div class="sidebar-toggle" @click="toggleSidebar">
-                    <PhTextOutdent class="sidebar-icon" :size="20" />
-                </div>
+                <!-- TODO: Fix sidebar toggle -->
+                <!-- 
+                    <div class="sidebar-toggle" @click="toggleSidebar">
+                        <PhTextOutdent class="sidebar-icon" :size="20" />
+                    </div> 
+                -->
                 <div class="new-note" @click="createNewNote">
                     <PhNotePencil class="sidebar-icon" :size="20" />
                 </div>
