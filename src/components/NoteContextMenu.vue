@@ -8,8 +8,7 @@ import { useToastStore } from '@/stores/toast'
 const props = defineProps<{
     noteId: string
     isPublic: boolean
-    show: boolean
-    position: { x: number; y: number }
+    showContextMenu: boolean
 }>()
 
 const emit = defineEmits(['close'])
@@ -45,7 +44,7 @@ function handleEdit() {
 </script>
 
 <template>
-    <div v-if="show" class="context-menu" :style="{ top: `${position.y}px`, left: `${position.x}px` }" @click.stop>
+    <div v-if="showContextMenu" class="context-menu" @click.stop>
         <button class="menu-item" @click="handleEdit">
             <PhPencilLine :size="20" class="menu-item-icon" />
             Edit
@@ -55,7 +54,7 @@ function handleEdit() {
             {{ isPublic ? 'Make Private' : 'Publish' }}
         </button>
         <button class="menu-item delete" @click="handleDelete">
-            <PhTrash :size="20" class="menu-item-icon" />
+            <PhTrash :size="20" class="menu-item-icon"  />
             Delete
         </button>
     </div>
@@ -63,13 +62,16 @@ function handleEdit() {
 
 <style scoped>
 .context-menu {
-    position: fixed;
+    position: absolute;
     background: white;
     border-radius: v-bind('radii.md');
     box-shadow: v-bind('shadows.lg');
     border: 1px solid v-bind('colors.neutral[200]');
     min-width: 160px;
     z-index: 100;
+    top: 100%;
+    left: -20px;
+    padding: v-bind('spacing.sm');
 }
 
 .menu-item {
@@ -96,6 +98,10 @@ function handleEdit() {
 
 .menu-item.delete {
     color: v-bind('colors.red[600]');
+}
+
+.menu-item.delete .menu-item-icon {
+    fill: v-bind('colors.red[600]');
 }
 
 .menu-item.delete:hover {

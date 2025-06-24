@@ -32,7 +32,7 @@ const noteContent = computed({
 })
 
 
-onMounted(async () => {
+async function loadNoteFromRoute() {
     const noteId = route.params.id
     if (noteId) {
         try {
@@ -59,6 +59,10 @@ onMounted(async () => {
             notesStore.setCurrentNote(emptyNote)
         }
     }
+}
+
+onMounted(() => {
+    loadNoteFromRoute()
 })
 
 async function autoSave() {
@@ -99,6 +103,10 @@ watch(() => noteTitle.value, (newVal) => {
 
 watch(() => noteContent.value, (newVal) => {
     if (newVal.trim() !== '') autoSave()
+})
+
+watch(() => route.params.id, () => {
+    loadNoteFromRoute()
 })
 </script>
 

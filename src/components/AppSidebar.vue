@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { PhNotePencil, PhTextOutdent } from "@phosphor-icons/vue";
+import { PhNotePencil, PhDotsThreeVertical } from "@phosphor-icons/vue";
 import { useNotesStore } from '@/stores/notes'
 import { useRouter } from 'vue-router'
 import { colors, spacing, typography, shadows, radii, animations } from '@/design/tokens'
@@ -13,6 +13,8 @@ const router = useRouter()
 const toast = useToastStore()
 const isMobile = ref(window.innerWidth < 768)
 const isSidebarOpen = ref(!isMobile.value)
+const showContextMenu = ref(false)
+const contextMenuNoteId = ref('')
 
 function handleResize() {
     isMobile.value = window.innerWidth < 768
@@ -57,13 +59,27 @@ async function loadNote(noteId: string) {
     }
 }
 
+function toggleContextMenu(noteId: string) {
+    showContextMenu.value = !showContextMenu.value
+    contextMenuNoteId.value = noteId
+}
+
+function handleClickOutside(event: Event) {
+    const target = event.target as Element
+    if (showContextMenu.value && !target.closest('.context-menu') && !target.closest('.note-item-actions')) {
+        showContextMenu.value = false
+    }
+}
+
 onMounted(() => {
     window.addEventListener('resize', handleResize)
+    document.addEventListener('click', handleClickOutside)
     notesStore.fetchNotes()
 })
 
 onUnmounted(() => {
     window.removeEventListener('resize', handleResize)
+    document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -91,9 +107,14 @@ onUnmounted(() => {
         <div v-else class="notes-list">
             <div v-for="note in notesStore.notes" :key="note._id" class="note-item"
                 :class="{ active: $route.params.id === note._id }" @click="loadNote(note._id)">
-                <span>{{ note.title || 'Untitled Note' }}</span>
-                <!-- <NoteContextMenu :noteId="note._id" :isPublic="note.isPublic" :show="true"
-                    :position="{ x: 0, y: 0 }" /> -->
+                <div class="note-item-content">
+                    <span>{{ note.title || 'Untitled Note' }}</span>
+                    <div class="note-item-actions" @click.stop="toggleContextMenu(note._id)">
+                        <PhDotsThreeVertical :size="20" />
+                        <NoteContextMenu :noteId="contextMenuNoteId" :isPublic="note.isPublic"
+                            :showContextMenu="showContextMenu" @close="showContextMenu = false" />
+                    </div>
+                </div>
             </div>
         </div>
     </aside>
@@ -180,6 +201,27 @@ onUnmounted(() => {
     transition: v-bind('animations.transitions.base');
     border-radius: v-bind('radii.base');
     color: v-bind('colors.neutral[700]');
+}
+
+.note-item-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.note-item-actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: v-bind('spacing.xs');
+    border-radius: v-bind('radii.base');
+    transition: v-bind('animations.transitions.base');
+}
+
+.note-item-actions:hover {
+    background: v-bind('colors.neutral[200]');
 }
 
 .note-item:hover {
