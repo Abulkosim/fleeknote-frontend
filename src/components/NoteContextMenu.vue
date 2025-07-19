@@ -2,8 +2,9 @@
 import { useNotesStore } from '@/stores/notes'
 import { useRouter } from 'vue-router'
 import { colors, spacing, shadows, radii, animations } from '@/design/tokens'
-import { PhPencilLine, PhGlobe, PhTrash } from "@phosphor-icons/vue"
+import { PhPencilLine, PhGlobe, PhTrash, PhCopy, PhCheck } from "@phosphor-icons/vue"
 import { useToastStore } from '@/stores/toast'
+import { ref } from 'vue'
 
 const props = defineProps<{
     noteId: string
@@ -15,6 +16,7 @@ const emit = defineEmits(['close'])
 const notesStore = useNotesStore()
 const router = useRouter()
 const toast = useToastStore()
+const copying = ref(false)
 
 async function handleDelete() {
     if (confirm('Are you sure you want to delete this note?')) {
@@ -41,6 +43,16 @@ function handleEdit() {
     router.push(`/notes/${props.noteId}`)
     emit('close')
 }
+
+function handleCopyLink() {
+    copying.value = true
+    const link = `${window.location.origin}/notes/${props.noteId}`
+    navigator.clipboard.writeText(link)
+    toast.addToast('Link copied to clipboard', 'success')
+    setTimeout(() => {
+        copying.value = false
+    }, 2000)
+}
 </script>
 
 <template>
@@ -53,8 +65,18 @@ function handleEdit() {
             <PhGlobe :size="20" class="menu-item-icon" />
             {{ isPublic ? 'Make Private' : 'Publish' }}
         </button>
+        <button v-if="isPublic" class="menu-item" @click="handleCopyLink" :disabled="copying">
+            <template v-if="!copying">
+                <PhCopy :size="20" class="menu-item-icon" />
+                Copy Link
+            </template>
+            <template v-else>
+                <PhCheck :size="20" class="menu-item-icon" />
+                Copied
+            </template>
+        </button>
         <button class="menu-item delete" @click="handleDelete">
-            <PhTrash :size="20" class="menu-item-icon"  />
+            <PhTrash :size="20" class="menu-item-icon" />
             Delete
         </button>
     </div>
