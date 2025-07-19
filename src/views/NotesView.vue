@@ -12,25 +12,17 @@ const isSaving = ref(false)
 const isLoading = ref(false)
 const saveTimeout = ref<number | null>(null)
 
+const localTitle = ref('')
+const localContent = ref('')
+
 const currentNote = computed(() => notesStore.getCurrentNote())
-const noteTitle = computed({
-    get: () => currentNote.value?.title || '',
-    set: (value: string) => {
-        if (currentNote.value) {
-            currentNote.value.title = value
-        }
-    }
-})
 
-const noteContent = computed({
-    get: () => currentNote.value?.content || '',
-    set: (value: string) => {
-        if (currentNote.value) {
-            currentNote.value.content = value
-        }
+watch(currentNote, (newNote) => {
+    if (newNote) {
+        localTitle.value = newNote.title
+        localContent.value = newNote.content
     }
-})
-
+}, { immediate: true })
 
 async function loadNoteFromRoute() {
     const noteId = route.params.id
@@ -77,18 +69,19 @@ async function autoSave() {
 
             if (currentNote.value._id === '') {
                 const newNote = await notesStore.createNote(
-                    currentNote.value.title,
-                    currentNote.value.content
+                    localTitle.value,
+                    localContent.value
                 )
                 notesStore.setCurrentNote(newNote)
                 router.replace(`/notes/${newNote._id}`)
             } else {
-                if (currentNote.value.title !== noteTitle.value || currentNote.value.content !== noteContent.value) {
-                    await notesStore.updateNote({
+                if (currentNote.value.title !== localTitle.value || currentNote.value.content !== localContent.value) {
+                    const updatedNote = await notesStore.updateNote({
                         _id: currentNote.value._id,
-                        title: currentNote.value.title,
-                        content: currentNote.value.content
+                        title: localTitle.value,
+                        content: localContent.value
                     })
+                    notesStore.setCurrentNote(updatedNote)
                 }
             }
         } finally {
@@ -97,11 +90,11 @@ async function autoSave() {
     }, 2000) as unknown as number
 }
 
-watch(() => noteTitle.value, (newVal) => {
+watch(() => localTitle.value, (newVal) => {
     if (newVal.trim() !== '') autoSave()
 })
 
-watch(() => noteContent.value, (newVal) => {
+watch(() => localContent.value, (newVal) => {
     if (newVal.trim() !== '') autoSave()
 })
 
@@ -127,9 +120,9 @@ watch(() => route.params.id, () => {
                 </div>
 
                 <div v-else-if="currentNote" class="editor-content">
-                    <input v-model="noteTitle" type="text" class="title-input" placeholder="Note title..." />
+                    <input v-model="localTitle" type="text" class="title-input" placeholder="Note title..." />
 
-                    <textarea v-model="noteContent" class="content-input" placeholder="Start writing..."></textarea>
+                    <textarea v-model="localContent" class="content-input" placeholder="Start writing..."></textarea>
                 </div>
             </main>
         </div>
