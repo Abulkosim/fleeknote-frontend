@@ -2,11 +2,14 @@
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { colors, spacing, typography, radii } from '@/design/tokens'
+import { useNotesStore } from '@/stores/notes'
 
 const auth = useAuthStore()
+const noteStore = useNotesStore()
 const router = useRouter()
 
 function handleLogout() {
+  noteStore.clearCurrentNote()
   auth.logout()
   router.push('/')
 }
