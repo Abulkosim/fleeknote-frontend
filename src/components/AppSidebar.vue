@@ -109,7 +109,7 @@ onUnmounted(() => {
                     <span>{{ note.title || 'Untitled Note' }}</span>
                     <div class="note-item-actions" @click.stop="toggleContextMenu(note._id)">
                         <PhDotsThreeVertical :size="20" />
-                        <NoteContextMenu :noteId="note._id" :isPublic="note.isPublic"
+                        <NoteContextMenu :noteId="note._id" :slug="note.slug" :isPublic="note.isPublic"
                             :showContextMenu="activeContextMenuId === note._id" @close="activeContextMenuId = ''" />
                     </div>
                 </div>

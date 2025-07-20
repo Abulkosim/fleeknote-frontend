@@ -13,6 +13,7 @@ const props = defineProps<{
     noteId: string
     isPublic: boolean
     showContextMenu: boolean
+    slug: string
 }>()
 
 const emit = defineEmits(['close'])
@@ -56,8 +57,7 @@ function handleEdit() {
 
 function handleCopyLink() {
     copying.value = true
-    console.log(authStore.user)
-    const link = `${window.location.origin}/${authStore.user?.username}/notes/${props.noteId}`
+    const link = `${window.location.origin}/${authStore.user?.username}/notes/${props.slug}`
     navigator.clipboard.writeText(link)
     toast.addToast('Link copied to clipboard', 'success')
     setTimeout(() => {
