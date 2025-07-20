@@ -95,7 +95,7 @@ function handleCopyLink() {
     <Dialog v-model:visible="showDeleteDialog" modal header="Delete Note" :style="{ width: '30rem' }">
         <p>Are you sure you want to delete this note?</p>
         <template #footer>
-            <Button label="Cancel" @click="showDeleteDialog = false" text />
+            <Button label="Cancel" @click="showDeleteDialog = false" severity="secondary" text />
             <Button label="Delete" severity="danger" @click="handleDelete" />
         </template>
     </Dialog>
