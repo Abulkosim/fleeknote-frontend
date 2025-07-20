@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useNotesStore } from '@/stores/notes'
+import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { colors, spacing, shadows, radii, animations } from '@/design/tokens'
 import { PhPencilLine, PhGlobe, PhTrash, PhCopy, PhCheck } from "@phosphor-icons/vue"
 import { useToastStore } from '@/stores/toast'
 import { ref } from 'vue'
+import Dialog from 'primevue/dialog'
+import Button from 'primevue/button'
 
 const props = defineProps<{
     noteId: string
@@ -14,20 +17,27 @@ const props = defineProps<{
 
 const emit = defineEmits(['close'])
 const notesStore = useNotesStore()
+const authStore = useAuthStore()
 const router = useRouter()
 const toast = useToastStore()
 const copying = ref(false)
+const showDeleteDialog = ref(false)
 
 async function handleDelete() {
-    if (confirm('Are you sure you want to delete this note?')) {
-        try {
-            await notesStore.deleteNote(props.noteId)
-            router.push('/notes')
-        } catch (error) {
-            console.error('Failed to delete note:', error)
-        }
+    try {
+        await notesStore.deleteNote(props.noteId)
+        router.push('/notes')
+        showDeleteDialog.value = false
+        notesStore.clearCurrentNote()
+        emit('close')
+    } catch (error) {
+        console.error('Failed to delete note:', error)
+        toast.addToast('Failed to delete note', 'error')
     }
-    emit('close')
+}
+
+function openDeleteDialog() {
+    showDeleteDialog.value = true
 }
 
 async function handleTogglePublish() {
@@ -46,7 +56,8 @@ function handleEdit() {
 
 function handleCopyLink() {
     copying.value = true
-    const link = `${window.location.origin}/notes/${props.noteId}`
+    console.log(authStore.user)
+    const link = `${window.location.origin}/${authStore.user?.username}/notes/${props.noteId}`
     navigator.clipboard.writeText(link)
     toast.addToast('Link copied to clipboard', 'success')
     setTimeout(() => {
@@ -75,11 +86,19 @@ function handleCopyLink() {
                 Copied
             </template>
         </button>
-        <button class="menu-item delete" @click="handleDelete">
+        <button class="menu-item delete" @click="openDeleteDialog">
             <PhTrash :size="20" class="menu-item-icon" />
             Delete
         </button>
     </div>
+
+    <Dialog v-model:visible="showDeleteDialog" modal header="Delete Note" :style="{ width: '30rem' }">
+        <p>Are you sure you want to delete this note?</p>
+        <template #footer>
+            <Button label="Cancel" @click="showDeleteDialog = false" text />
+            <Button label="Delete" severity="danger" @click="handleDelete" />
+        </template>
+    </Dialog>
 </template>
 
 <style scoped>

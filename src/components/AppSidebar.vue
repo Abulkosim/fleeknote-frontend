@@ -13,8 +13,7 @@ const router = useRouter()
 const toast = useToastStore()
 const isMobile = ref(window.innerWidth < 768)
 const isSidebarOpen = ref(!isMobile.value)
-const showContextMenu = ref(false)
-const contextMenuNoteId = ref('')
+const activeContextMenuId = ref('')
 
 function handleResize() {
     isMobile.value = window.innerWidth < 768
@@ -60,14 +59,13 @@ async function loadNote(noteId: string) {
 }
 
 function toggleContextMenu(noteId: string) {
-    showContextMenu.value = !showContextMenu.value
-    contextMenuNoteId.value = noteId
+    activeContextMenuId.value = activeContextMenuId.value === noteId ? '' : noteId
 }
 
 function handleClickOutside(event: Event) {
     const target = event.target as Element
-    if (showContextMenu.value && !target.closest('.context-menu') && !target.closest('.note-item-actions')) {
-        showContextMenu.value = false
+    if (activeContextMenuId.value && !target.closest('.context-menu') && !target.closest('.note-item-actions')) {
+        activeContextMenuId.value = ''
     }
 }
 
@@ -111,8 +109,8 @@ onUnmounted(() => {
                     <span>{{ note.title || 'Untitled Note' }}</span>
                     <div class="note-item-actions" @click.stop="toggleContextMenu(note._id)">
                         <PhDotsThreeVertical :size="20" />
-                        <NoteContextMenu :noteId="contextMenuNoteId" :isPublic="note.isPublic"
-                            :showContextMenu="showContextMenu" @close="showContextMenu = false" />
+                        <NoteContextMenu :noteId="note._id" :isPublic="note.isPublic"
+                            :showContextMenu="activeContextMenuId === note._id" @close="activeContextMenuId = ''" />
                     </div>
                 </div>
             </div>
@@ -218,6 +216,11 @@ onUnmounted(() => {
     padding: v-bind('spacing.xs');
     border-radius: v-bind('radii.base');
     transition: v-bind('animations.transitions.base');
+    opacity: 0;
+}
+
+.note-item:hover .note-item-actions {
+    opacity: 1;
 }
 
 .note-item-actions:hover {
