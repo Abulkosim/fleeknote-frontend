@@ -73,7 +73,10 @@ async function autoSave() {
                     localContent.value
                 )
                 notesStore.setCurrentNote(newNote)
-                router.replace(`/notes/${newNote._id}`)
+                router.replace({
+                    path: `/notes/${newNote._id}`,
+                    replace: true
+                })
             } else {
                 if (currentNote.value.title !== localTitle.value || currentNote.value.content !== localContent.value) {
                     const updatedNote = await notesStore.updateNote({
@@ -98,9 +101,11 @@ watch(() => localContent.value, (newVal) => {
     if (newVal.trim() !== '') autoSave()
 })
 
-watch(() => route.params.id, () => {
-    loadNoteFromRoute()
-})
+watch(() => route.params.id, (newId, oldId) => {
+    if (newId !== oldId) {
+        loadNoteFromRoute()
+    }
+}, { flush: 'post' })
 </script>
 
 <template>
@@ -175,14 +180,14 @@ watch(() => route.params.id, () => {
     padding: v-bind('spacing.lg');
     display: flex;
     flex-direction: column;
-    gap: v-bind('spacing.md');
+    gap: v-bind('spacing.sm');
     overflow-y: auto;
 }
 
 .title-input {
     width: 100%;
     border: none;
-    font-size: v-bind('typography.sizes.xl');
+    font-size: calc(1.2 * v-bind('typography.sizes.xl'));
     font-weight: 600;
     color: v-bind('colors.neutral[800]');
     padding: v-bind('spacing.sm');
