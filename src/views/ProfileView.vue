@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
 import { spacing, typography, colors, shadows, radii, animations, focusRings } from '@/design/tokens'
@@ -13,6 +13,15 @@ const router = useRouter()
 
 const isLoading = ref(false)
 const isDeleteAccountDialogOpen = ref(false)
+
+const formattedMemberSince = computed(() => {
+  try {
+    if (!auth.user?.createdAt) return 'Not available'
+    return formatDistanceToNow(new Date(auth.user.createdAt), { addSuffix: true })
+  } catch (error) {
+    return 'Not available'
+  }
+})
 
 onMounted(() => {
   loadUserData()
@@ -73,7 +82,7 @@ async function deleteAccount() {
           <div class="info-group">
             <label>Member Since</label>
             <div class="info-value">
-              {{ formatDistanceToNow(new Date(auth.user.createdAt), { addSuffix: true }) }}
+              {{ formattedMemberSince }}
             </div>
           </div>
 
