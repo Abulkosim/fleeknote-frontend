@@ -24,6 +24,16 @@ const router = createRouter({
           name: 'note',
           component: () => import('../views/NotesView.vue'),
           meta: { requiresAuth: true }
+        },
+        {
+          path: ':username/notes',
+          name: 'public-notes',
+          component: () => import('../views/PublicNotesView.vue')
+        },
+        {
+          path: ':username/notes/:slug',
+          name: 'public-note',
+          component: () => import('../views/PublicNoteView.vue')
         }
       ]
     },
