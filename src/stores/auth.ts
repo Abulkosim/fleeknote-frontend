@@ -81,11 +81,11 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('username')
     }
 
-    async function loadUser() {
+    async function getUserProfile() {
         if (token.value) {
             try {
                 const { data } = await apiClient.get('/auth/me')
-                user.value = data.user
+                user.value = data
             } catch (error) {
                 console.error('Load user error:', error)
                 logout()
@@ -101,6 +101,7 @@ export const useAuthStore = defineStore('auth', () => {
         signup,
         logout,
         forgotPassword,
-        resetPassword
+        resetPassword, 
+        getUserProfile
     }
 }) 
