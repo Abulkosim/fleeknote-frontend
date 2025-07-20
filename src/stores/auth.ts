@@ -97,7 +97,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     async function deleteAccount() {
         try {
-            await apiClient.delete('/auth/me')
+            await apiClient.delete('/auth/delete')
         } catch (error) {
             console.error('Delete account error:', error)
             throw error
