@@ -24,7 +24,13 @@ const router = createRouter({
           name: 'note',
           component: () => import('../views/NotesView.vue'),
           meta: { requiresAuth: true }
-        },
+        }
+      ]
+    },
+    {
+      path: '/',
+      component: () => import('../layouts/PublicLayout.vue'),
+      children: [
         {
           path: ':username/notes',
           name: 'public-notes',
