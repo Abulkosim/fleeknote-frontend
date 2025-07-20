@@ -26,6 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
             token.value = data.token
             localStorage.clear()
             localStorage.setItem('token', data.token)
+            localStorage.setItem('username', data.user.username)
         } catch (err: any) {
             error.value = err.response?.data?.message || 'Login failed'
             throw error.value
@@ -44,6 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
             token.value = data.token
             localStorage.clear()
             localStorage.setItem('token', data.token)
+            localStorage.setItem('username', data.user.username)
         } catch (err: any) {
             error.value = err.response?.data?.message || 'Registration failed'
             throw error.value
@@ -73,8 +75,10 @@ export const useAuthStore = defineStore('auth', () => {
     function logout() {
         user.value = null
         token.value = null
+
         localStorage.clear()
         localStorage.removeItem('token')
+        localStorage.removeItem('username')
     }
 
     async function loadUser() {
