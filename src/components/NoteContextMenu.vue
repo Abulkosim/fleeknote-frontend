@@ -8,6 +8,7 @@ import { useToastStore } from '@/stores/toast'
 import { ref } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 const props = defineProps<{
     noteId: string
@@ -22,6 +23,8 @@ const authStore = useAuthStore()
 const router = useRouter()
 const toast = useToastStore()
 const copying = ref(false)
+const copied = ref(false)
+
 const showDeleteDialog = ref(false)
 
 async function handleDelete() {
@@ -55,14 +58,22 @@ function handleEdit() {
     emit('close')
 }
 
-function handleCopyLink() {
-    copying.value = true
-    const link = `${window.location.origin}/${authStore.user?.username}/notes/${props.slug}`
-    navigator.clipboard.writeText(link)
-    toast.addToast('Link copied to clipboard', 'success')
-    setTimeout(() => {
+async function handleCopyLink() {
+    try {
+        copying.value = true
+        const { username, slug } = await notesStore.getNoteLink(props.noteId)
+        const link = `${window.location.origin}/${username}/notes/${slug}`
+        navigator.clipboard.writeText(link)
+        toast.addToast('Link copied to clipboard', 'success')
+    } catch {
+        toast.addToast('Failed to copy link', 'error')
+    } finally {
         copying.value = false
-    }, 2000)
+        copied.value = true
+        setTimeout(() => {
+            copied.value = false
+        }, 2000)
+    }
 }
 </script>
 
@@ -76,14 +87,18 @@ function handleCopyLink() {
             <PhGlobe :size="20" class="menu-item-icon" />
             {{ isPublic ? 'Make Private' : 'Publish' }}
         </button>
-        <button v-if="isPublic" class="menu-item" @click="handleCopyLink" :disabled="copying">
-            <template v-if="!copying">
-                <PhCopy :size="20" class="menu-item-icon" />
-                Copy Link
+        <button v-if="isPublic" class="menu-item" @click="handleCopyLink" :disabled="copying || copied">
+            <template v-if="copying">
+                <LoadingSpinner size="md" class="menu-item-icon" />
+                Copying...
+            </template>
+            <template v-else-if="copied">
+                <PhCheck :size="20" class="menu-item-icon" />
+                Copied!
             </template>
             <template v-else>
-                <PhCheck :size="20" class="menu-item-icon" />
-                Copied
+                <PhCopy :size="20" class="menu-item-icon" />
+                Copy Link
             </template>
         </button>
         <button class="menu-item delete" @click="openDeleteDialog">

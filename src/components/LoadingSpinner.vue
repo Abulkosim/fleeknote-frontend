@@ -2,7 +2,7 @@
 import { colors, animations } from '@/design/tokens'
 
 defineProps<{
-    size?: 'sm' | 'md' | 'lg'
+    size?: 'sm' | 'md' | 'lg' | 'xl'
     color?: string
 }>()
 </script>
@@ -34,12 +34,18 @@ defineProps<{
 }
 
 .md .spinner {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+}
+
+.lg .spinner {
     width: 24px;
     height: 24px;
     border-width: 2px;
 }
 
-.lg .spinner {
+.xl .spinner {
     width: 40px;
     height: 40px;
     border-width: 3px;

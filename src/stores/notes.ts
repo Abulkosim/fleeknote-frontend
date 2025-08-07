@@ -19,8 +19,8 @@ export const useNotesStore = defineStore('notes', () => {
     const isLoading = ref(false)
     const error = ref('')
 
-    function getCurrentNote() { 
-        return currentNote.value; 
+    function getCurrentNote() {
+        return currentNote.value;
     }
 
     function setCurrentNote(note: Note) {
@@ -136,6 +136,15 @@ export const useNotesStore = defineStore('notes', () => {
         }
     }
 
+    async function getNoteLink(id: string) {
+        try {
+            const { data } = await apiClient.get(`/notes/${id}/link`)
+            return data
+        } catch (err: any) {
+            throw err
+        }
+    }
+
     return {
         notes,
         isLoading,
@@ -148,6 +157,7 @@ export const useNotesStore = defineStore('notes', () => {
         updateNote,
         deleteNote,
         togglePublish,
-        clearCurrentNote
+        clearCurrentNote,
+        getNoteLink
     }
 }) 
