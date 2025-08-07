@@ -25,17 +25,11 @@ const router = createRouter({
           component: () => import('../views/NotesView.vue'),
           meta: { requiresAuth: true }
         },
-        {
-          path: 'profile',
-          name: 'profile',
-          component: () => import('../views/ProfileView.vue'),
-          meta: { requiresAuth: true }
-        }
       ]
     },
     {
       path: '/',
-      component: () => import('../layouts/PublicLayout.vue'),
+      component: () => import('../layouts/FullLayout.vue'),
       children: [
         {
           path: ':username/notes',
@@ -46,6 +40,12 @@ const router = createRouter({
           path: ':username/notes/:slug',
           name: 'public-note',
           component: () => import('../views/PublicNoteView.vue')
+        },
+        {
+          path: 'profile',
+          name: 'profile',
+          component: () => import('../views/ProfileView.vue'),
+          meta: { requiresAuth: true }
         }
       ]
     },

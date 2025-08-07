@@ -4,7 +4,7 @@ import AppHeader from '../components/AppHeader.vue'
 </script>
 
 <template>
-  <div class="public-layout">
+  <div class="full-layout">
     <AppHeader />
 
     <RouterView />
@@ -12,7 +12,7 @@ import AppHeader from '../components/AppHeader.vue'
 </template>
 
 <style scoped>
-.public-layout {
+.full-layout {
   min-height: 100vh;
 }
 </style> 
