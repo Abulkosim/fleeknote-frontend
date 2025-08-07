@@ -11,7 +11,7 @@ interface User {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-    const user = ref<User | null>(null)
+    const user = ref<User | null>(JSON.parse(localStorage.getItem('user') ?? 'null'))
     const token = ref<string | null>(localStorage.getItem('token'))
     const error = ref('')
 
