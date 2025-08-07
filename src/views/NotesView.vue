@@ -11,6 +11,7 @@ const router = useRouter()
 const isSaving = ref(false)
 const isLoading = ref(false)
 const saveTimeout = ref<number | null>(null)
+const contentInput = ref<HTMLTextAreaElement>()
 
 const localTitle = ref('')
 const localContent = ref('')
@@ -97,6 +98,11 @@ async function autoSave() {
     }, 2000) as unknown as number
 }
 
+function focusContentInput() {
+    if (contentInput.value) {
+        contentInput.value.focus()
+    }
+}
 
 watch(() => localTitle.value, (newVal) => {
     if (newVal.trim() !== '') autoSave()
@@ -119,7 +125,9 @@ watch(() => route.params.id, (newId, oldId) => {
             <main class="editor">
                 <div class="editor-header">
                     <div class="save-status" :class="{ saving: isSaving }">
-                        <span v-if="currentNote && currentNote._id !== '' || isSaving">{{ isSaving ? 'Saving...' : 'All changes saved' }}</span>
+                        <span v-if="currentNote && currentNote._id !== '' || isSaving">
+                            {{ isSaving ? 'Saving...' : 'All changes saved' }}
+                        </span>
                         <span v-else>New Note</span>
                     </div>
                 </div>
@@ -130,9 +138,9 @@ watch(() => route.params.id, (newId, oldId) => {
                 </div>
 
                 <div v-else-if="currentNote" class="editor-content">
-                    <input v-model="localTitle" type="text" class="title-input" placeholder="Note title..." />
-
-                    <textarea v-model="localContent" class="content-input" placeholder="Start writing..."></textarea>
+                    <input v-model="localTitle" type="text" class="title-input" placeholder="New note"
+                        @keydown.prevent.enter="focusContentInput" />
+                    <textarea ref="contentInput" v-model="localContent" class="content-input" @keydown.prevent.enter="autoSave"></textarea>
                 </div>
             </main>
         </div>
@@ -192,17 +200,17 @@ watch(() => route.params.id, (newId, oldId) => {
 .title-input {
     width: 100%;
     border: none;
-    font-size: calc(1.2 * v-bind('typography.sizes.xl'));
-    font-weight: 600;
+    font-size: calc(1.3 * v-bind('typography.sizes.xl'));
+    font-weight: 500;
     color: v-bind('colors.neutral[800]');
     padding: v-bind('spacing.sm');
     border-radius: v-bind('radii.base');
     transition: v-bind('animations.transitions.base');
 }
 
-.title-input:focus {
+.title-input:focus,
+.content-input:focus {
     outline: none;
-    background: v-bind('colors.neutral[50]');
 }
 
 .content-input {
@@ -213,15 +221,10 @@ watch(() => route.params.id, (newId, oldId) => {
     font-size: v-bind('typography.sizes.base');
     line-height: v-bind('typography.lineHeights.relaxed');
     color: v-bind('colors.neutral[700]');
-    padding: v-bind('spacing.md');
+    padding: v-bind('spacing.sm');
     border-radius: v-bind('radii.base');
     transition: v-bind('animations.transitions.base');
     font-family: v-bind('typography.fonts.sans');
-}
-
-.content-input:focus {
-    outline: none;
-    background: v-bind('colors.neutral[50]');
 }
 
 @media (max-width: 768px) {
