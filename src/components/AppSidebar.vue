@@ -194,7 +194,7 @@ onUnmounted(() => {
 }
 
 .note-item {
-    padding: v-bind('spacing.sm');
+    padding: v-bind('spacing.xs') v-bind('spacing.md');
     cursor: pointer;
     transition: v-bind('animations.transitions.base');
     border-radius: v-bind('radii.base');

@@ -67,24 +67,28 @@ async function autoSave() {
         try {
             if (!currentNote.value) return
 
+            const trimmedTitle = localTitle.value.trim()
+            const trimmedContent = localContent.value.trim()
+
             if (currentNote.value._id === '') {
-                const newNote = await notesStore.createNote(
-                    localTitle.value,
-                    localContent.value
-                )
+                const newNote = await notesStore.createNote(trimmedTitle, trimmedContent)
                 notesStore.setCurrentNote(newNote)
                 router.replace({
                     path: `/notes/${newNote._id}`,
                     replace: true
                 })
             } else {
-                if (currentNote.value.title !== localTitle.value || currentNote.value.content !== localContent.value) {
+                const hasChanged =
+                    currentNote.value.title !== trimmedTitle ||
+                    currentNote.value.content !== trimmedContent
+
+                if (hasChanged) {
                     const updatedNote = await notesStore.updateNote({
                         _id: currentNote.value._id,
-                        title: localTitle.value,
-                        content: localContent.value
+                        title: trimmedTitle,
+                        content: trimmedContent
                     })
-                    notesStore.setCurrentNote(updatedNote)
+                    // notesStore.setCurrentNote(updatedNote)
                 }
             }
         } finally {
@@ -92,6 +96,7 @@ async function autoSave() {
         }
     }, 2000) as unknown as number
 }
+
 
 watch(() => localTitle.value, (newVal) => {
     if (newVal.trim() !== '') autoSave()
