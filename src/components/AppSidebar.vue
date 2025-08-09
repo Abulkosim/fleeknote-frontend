@@ -138,11 +138,18 @@ onUnmounted(() => {
         background: white;
         height: 100vh;
         transform: translateX(-296px);
+        display: flex;
+        flex-direction: column;
     }
 
     .sidebar.sidebar-open {
         transform: translateX(0);
         box-shadow: v-bind('shadows.lg');
+    }
+
+    .notes-list {
+        max-height: calc(100vh - 120px);
+        flex: 1;
     }
 }
 
@@ -191,6 +198,9 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     gap: v-bind('spacing.xs');
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+    padding-right: v-bind('spacing.xs');
 }
 
 .note-item {
