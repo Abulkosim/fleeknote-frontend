@@ -47,8 +47,9 @@ function openDeleteDialog() {
 async function handleTogglePublish() {
     try {
         await notesStore.togglePublish(props.noteId)
+        toast.addToast(props.isPublic ? 'Note published' : 'Note unpublished', 'success')
     } catch (error) {
-        console.error('Failed to toggle publish status:', error)
+        toast.addToast(props.isPublic ? 'Failed to unpublish note' : 'Failed to publish note', 'error')
     }
     emit('close')
 }
