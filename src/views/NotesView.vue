@@ -200,10 +200,10 @@ watch(() => route.params.id, (newId, oldId) => {
 .title-input {
     width: 100%;
     border: none;
-    font-size: calc(1.3 * v-bind('typography.sizes.xl'));
+    font-size: calc(1.25 * v-bind('typography.sizes.xl'));
     font-weight: 500;
     color: v-bind('colors.neutral[800]');
-    padding: v-bind('spacing.sm');
+    padding: v-bind('spacing.xs') v-bind('spacing.md');
     border-radius: v-bind('radii.base');
     transition: v-bind('animations.transitions.base');
 }
@@ -221,7 +221,7 @@ watch(() => route.params.id, (newId, oldId) => {
     font-size: v-bind('typography.sizes.base');
     line-height: v-bind('typography.lineHeights.relaxed');
     color: v-bind('colors.neutral[700]');
-    padding: v-bind('spacing.sm');
+    padding: v-bind('spacing.xs') v-bind('spacing.md');
     border-radius: v-bind('radii.base');
     transition: v-bind('animations.transitions.base');
     font-family: v-bind('typography.fonts.sans');

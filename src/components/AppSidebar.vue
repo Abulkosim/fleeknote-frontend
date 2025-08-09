@@ -106,7 +106,7 @@ onUnmounted(() => {
             <div v-for="note in notesStore.notes" :key="note._id" class="note-item"
                 :class="{ active: $route.params.id === note._id }" @click="loadNote(note._id)">
                 <div class="note-item-content">
-                    <span>{{ note.title || 'Untitled Note' }}</span>
+                    <span class="note-item-title">{{ note.title || 'Untitled Note' }}</span>
                     <div class="note-item-actions" @click.stop="toggleContextMenu(note._id)">
                         <PhDotsThreeVertical :size="20" />
                         <NoteContextMenu :noteId="note._id" :slug="note.slug" :isPublic="note.isPublic"
@@ -194,7 +194,7 @@ onUnmounted(() => {
 }
 
 .note-item {
-    padding: v-bind('spacing.xs') v-bind('spacing.md');
+    padding: v-bind('spacing.xs') v-bind('spacing.sm');
     cursor: pointer;
     transition: v-bind('animations.transitions.base');
     border-radius: v-bind('radii.base');
@@ -205,6 +205,12 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+.note-item-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .note-item-actions {
