@@ -17,6 +17,7 @@ apiClient.interceptors.request.use(config => {
 })
 
 apiClient.interceptors.response.use(
+  // TODO: fix router usage
   response => response,
   error => {
     if (error.response?.status === 401) {

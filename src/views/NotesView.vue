@@ -139,8 +139,8 @@ watch(() => route.params.id, (newId, oldId) => {
 
                 <div v-else-if="currentNote" class="editor-content">
                     <input v-model="localTitle" type="text" class="title-input" placeholder="New note"
-                        @keydown.prevent.enter="focusContentInput" />
-                    <textarea ref="contentInput" v-model="localContent" class="content-input" @keydown.prevent.enter="autoSave"></textarea>
+                        @keydown.enter="focusContentInput" />
+                    <textarea ref="contentInput" v-model="localContent" class="content-input" @keydown.enter="autoSave"></textarea>
                 </div>
             </main>
         </div>

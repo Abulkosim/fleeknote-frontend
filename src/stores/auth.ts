@@ -26,7 +26,6 @@ export const useAuthStore = defineStore('auth', () => {
 
             user.value = data.user
             token.value = data.token
-            localStorage.clear()
             localStorage.setItem('token', data.token)
             localStorage.setItem('username', data.user.username)
         } catch (err: any) {
@@ -45,7 +44,6 @@ export const useAuthStore = defineStore('auth', () => {
 
             user.value = data.user
             token.value = data.token
-            localStorage.clear()
             localStorage.setItem('token', data.token)
             localStorage.setItem('username', data.user.username)
         } catch (err: any) {
@@ -78,7 +76,6 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = null
         token.value = null
 
-        localStorage.clear()
         localStorage.removeItem('token')
         localStorage.removeItem('username')
     }
