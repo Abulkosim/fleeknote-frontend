@@ -20,10 +20,6 @@ function handleResize() {
     isSidebarOpen.value = !isMobile.value
 }
 
-function toggleSidebar() {
-    isSidebarOpen.value = !isSidebarOpen.value
-}
-
 async function createNewNote() {
     if (!router.currentRoute.value.params.id) {
         return;
