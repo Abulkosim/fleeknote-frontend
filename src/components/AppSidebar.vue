@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import Skeleton from 'primevue/skeleton';
 import { PhNotePencil, PhDotsThreeVertical } from "@phosphor-icons/vue";
 import { useNotesStore } from '@/stores/notes'
 import { useRouter } from 'vue-router'
 import { colors, spacing, typography, shadows, radii, animations } from '@/design/tokens'
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import NoteContextMenu from '@/components/NoteContextMenu.vue'
 import { useToastStore } from '@/stores/toast'
 
@@ -94,19 +94,24 @@ onUnmounted(() => {
             </div>
         </div>
 
-        <div v-if="notesStore.isLoading" class="notes-loading">
-            <LoadingSpinner size="md" />
-        </div>
+        <div class="notes-list">
+            <div v-if="notesStore.isLoading" v-for="i in 7" :key="i" class="note-skeleton">
+                <div class="note-skeleton-content">
+                    <Skeleton height="20px" width="calc(100% - 32px)" />
+                    <Skeleton height="24px" width="24px" shape="circle" />
+                </div>
+            </div>
 
-        <div v-else class="notes-list">
-            <div v-for="note in notesStore.notes" :key="note._id" class="note-item"
-                :class="{ active: $route.params.id === note._id }" @click="loadNote(note._id)">
-                <div class="note-item-content">
-                    <span class="note-item-title">{{ note.title || 'Untitled Note' }}</span>
-                    <div class="note-item-actions" @click.stop="toggleContextMenu(note._id)">
-                        <PhDotsThreeVertical :size="20" />
-                        <NoteContextMenu :noteId="note._id" :slug="note.slug" :isPublic="note.isPublic"
-                            :showContextMenu="activeContextMenuId === note._id" @close="activeContextMenuId = ''" />
+            <div v-else>
+                <div v-for="note in notesStore.notes" :key="note._id" class="note-item"
+                    :class="{ active: $route.params.id === note._id }" @click="loadNote(note._id)">
+                    <div class="note-item-content">
+                        <span class="note-item-title">{{ note.title || 'Untitled Note' }}</span>
+                        <div class="note-item-actions" @click.stop="toggleContextMenu(note._id)">
+                            <PhDotsThreeVertical :size="20" />
+                            <NoteContextMenu :noteId="note._id" :slug="note.slug" :isPublic="note.isPublic"
+                                :showContextMenu="activeContextMenuId === note._id" @close="activeContextMenuId = ''" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -189,7 +194,8 @@ onUnmounted(() => {
     gap: v-bind('spacing.xs');
 }
 
-.note-item {
+.note-item,
+.note-skeleton {
     padding: v-bind('spacing.xs') v-bind('spacing.sm');
     cursor: pointer;
     transition: v-bind('animations.transitions.base');
@@ -197,7 +203,8 @@ onUnmounted(() => {
     color: v-bind('colors.neutral[700]');
 }
 
-.note-item-content {
+.note-item-content,
+.note-skeleton-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -272,11 +279,5 @@ onUnmounted(() => {
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     border: 0;
-}
-
-.notes-loading {
-    padding: v-bind('spacing.md');
-    color: v-bind('colors.neutral[500]');
-    text-align: center;
 }
 </style>
