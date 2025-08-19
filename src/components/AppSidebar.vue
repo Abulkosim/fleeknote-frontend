@@ -102,16 +102,14 @@ onUnmounted(() => {
                 </div>
             </div>
 
-            <div v-else>
-                <div v-for="note in notesStore.notes" :key="note._id" class="note-item"
-                    :class="{ active: $route.params.id === note._id }" @click="loadNote(note._id)">
-                    <div class="note-item-content">
-                        <span class="note-item-title">{{ note.title || 'Untitled Note' }}</span>
-                        <div class="note-item-actions" @click.stop="toggleContextMenu(note._id)">
-                            <PhDotsThreeVertical :size="20" />
-                            <NoteContextMenu :noteId="note._id" :slug="note.slug" :isPublic="note.isPublic"
-                                :showContextMenu="activeContextMenuId === note._id" @close="activeContextMenuId = ''" />
-                        </div>
+            <div v-else v-for="note in notesStore.notes" :key="note._id" class="note-item"
+                :class="{ active: $route.params.id === note._id }" @click="loadNote(note._id)">
+                <div class="note-item-content">
+                    <span class="note-item-title">{{ note.title || 'Untitled Note' }}</span>
+                    <div class="note-item-actions" @click.stop="toggleContextMenu(note._id)">
+                        <PhDotsThreeVertical :size="20" />
+                        <NoteContextMenu :noteId="note._id" :slug="note.slug" :isPublic="note.isPublic"
+                            :showContextMenu="activeContextMenuId === note._id" @close="activeContextMenuId = ''" />
                     </div>
                 </div>
             </div>
