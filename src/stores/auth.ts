@@ -101,6 +101,15 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    async function updateProfile(username: string) {
+        try {
+            await apiClient.post('/auth/update-profile', { username })
+        } catch (error) {
+            console.error('Update profile error:', error)
+            throw error
+        }
+    }
+
     return {
         user,
         token,
@@ -111,6 +120,7 @@ export const useAuthStore = defineStore('auth', () => {
         forgotPassword,
         resetPassword, 
         getUserProfile,
-        deleteAccount
+        deleteAccount, 
+        updateProfile
     }
 }) 
