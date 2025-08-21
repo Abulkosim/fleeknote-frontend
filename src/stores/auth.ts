@@ -7,7 +7,7 @@ interface User {
     username: string
     email: string
     createdAt: string
-    updatedAt: string, 
+    updatedAt: string,
     avatar: string | null
 }
 
@@ -102,11 +102,12 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
-    async function updateProfile(username: string) {
+    async function updateProfile(username: string, avatar: string) {
         try {
-            await apiClient.post('/auth/update-profile', { username })
+            await apiClient.post('/auth/update-profile', { username, avatar })
             if (user.value) {
                 user.value.username = username
+                user.value.avatar = avatar
             }
         } catch (error) {
             console.error('Update profile error:', error)
@@ -122,9 +123,9 @@ export const useAuthStore = defineStore('auth', () => {
         signup,
         logout,
         forgotPassword,
-        resetPassword, 
+        resetPassword,
         getUserProfile,
-        deleteAccount, 
+        deleteAccount,
         updateProfile
     }
 }) 

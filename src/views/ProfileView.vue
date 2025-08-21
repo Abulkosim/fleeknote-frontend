@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { Avatar, FloatLabel, InputText, Card, Button, Dialog, Skeleton } from 'primevue'
+import { Avatar, FloatLabel, InputText, Card, Button, Dialog, Skeleton, FileUpload } from 'primevue'
 import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
 import { spacing, colors, shadows, radii, typography } from '@/design/tokens'
@@ -13,8 +13,11 @@ const router = useRouter()
 const isLoading = ref(false)
 const isDeleteAccountDialogOpen = ref(false)
 const localUserName = ref('')
+const localAvatar = ref('')
+const avatarPreview = ref('')
+
 const isUpdateDisabled = computed(() => {
-  return localUserName.value === auth.user?.username || localUserName.value.length > 24 || localUserName.value.length < 3
+  return localUserName.value.length > 24 || localUserName.value.length < 3
 })
 const firstLetter = computed(() => {
   return auth.user?.username?.charAt(0).toUpperCase() || ''
@@ -38,6 +41,7 @@ async function loadUserData() {
     isLoading.value = true
     await auth.getUserProfile()
     localUserName.value = auth.user?.username || ''
+    localAvatar.value = auth.user?.avatar || ''
   } catch (error) {
     toast.addToast('Failed to load user data', 'error')
   } finally {
@@ -55,11 +59,25 @@ async function updateProfile() {
       toast.addToast('Username cannot be empty', 'warning')
       return
     }
-    await auth.updateProfile(localUserName.value)
-    
+
+    await auth.updateProfile(localUserName.value, localAvatar.value)
+
     toast.addToast('Profile updated successfully', 'success')
   } catch (error) {
     toast.addToast('Failed to update profile', 'error')
+  }
+}
+
+async function onAvatarSelect(event: any) {
+  const file = event.files[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const base64String = e.target?.result as string
+      localAvatar.value = base64String
+      avatarPreview.value = base64String
+    }
+    reader.readAsDataURL(file)
   }
 }
 
@@ -96,6 +114,7 @@ async function deleteAccount() {
         <div class="profile-form">
           <Skeleton width="100%" height="2.5rem" />
           <Skeleton width="100%" height="2.5rem" />
+          <Skeleton width="80%" height="2.5rem" />
         </div>
       </template>
       <template #footer>
@@ -109,7 +128,8 @@ async function deleteAccount() {
     <Card v-else class="profile-container">
       <template #header>
         <div class="profile-header">
-          <Avatar v-if="auth.user?.avatar" :image="auth.user?.avatar" shape="circle" size="xlarge" class="profile-avatar" />
+          <Avatar v-if="avatarPreview || auth.user?.avatar" :image="avatarPreview || auth.user?.avatar || ''"
+            shape="circle" size="xlarge" class="profile-avatar" />
           <Avatar v-else :label="firstLetter" shape="circle" size="xlarge" class="profile-avatar" />
         </div>
       </template>
@@ -133,13 +153,17 @@ async function deleteAccount() {
             <InputText id="email" :model-value="auth.user?.email || ''" readonly />
             <label for="email">Email</label>
           </FloatLabel>
+
+          <FileUpload mode="basic" name="avatar" accept="image/*" :maxFileSize="102400" chooseLabel="Choose Avatar"
+            :auto="false" @select="onAvatarSelect" />
         </div>
       </template>
 
       <template #footer>
         <div class="profile-actions">
           <Button label="Delete Account" icon="pi pi-trash" @click="openDeleteAccountDialog" severity="danger" />
-          <Button label="Update Profile" icon="pi pi-save" @click="updateProfile" severity="primary" :disabled="isUpdateDisabled" />
+          <Button label="Update Profile" icon="pi pi-save" @click="updateProfile" severity="contrast"
+            :disabled="isUpdateDisabled" />
         </div>
       </template>
     </Card>
@@ -197,7 +221,7 @@ async function deleteAccount() {
 }
 
 .profile-form {
-  display: flex; 
+  display: flex;
   flex-direction: column;
   gap: v-bind("spacing.md");
   padding: 0 v-bind("spacing.xl");
@@ -210,12 +234,12 @@ async function deleteAccount() {
 
 .profile-actions {
   display: flex;
-  gap: v-bind("spacing.md");
-  padding: v-bind("spacing.md") v-bind("spacing.lg");
+  gap: v-bind("spacing.sm");
+  padding: v-bind("spacing.md") v-bind("spacing.xl");
   border-top: 1px solid v-bind("colors.neutral[200]");
 }
 
-.profile-actions .p-button, 
+.profile-actions .p-button,
 .profile-action {
   flex: 1;
 }
