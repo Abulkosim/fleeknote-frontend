@@ -104,6 +104,9 @@ export const useAuthStore = defineStore('auth', () => {
     async function updateProfile(username: string) {
         try {
             await apiClient.post('/auth/update-profile', { username })
+            if (user.value) {
+                user.value.username = username
+            }
         } catch (error) {
             console.error('Update profile error:', error)
             throw error
