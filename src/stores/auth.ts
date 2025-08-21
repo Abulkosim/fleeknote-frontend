@@ -7,7 +7,8 @@ interface User {
     username: string
     email: string
     createdAt: string
-    updatedAt: string
+    updatedAt: string, 
+    avatar: string | null
 }
 
 export const useAuthStore = defineStore('auth', () => {
