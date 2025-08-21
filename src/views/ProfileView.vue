@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { Avatar, FloatLabel, InputText, Card, Button, Dialog, Skeleton } from 'primevue'
 import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
-import { spacing, typography, colors, shadows, radii, animations, focusRings } from '@/design/tokens'
+import { spacing, colors, shadows, radii, typography } from '@/design/tokens'
 import { formatDistanceToNow } from 'date-fns'
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
 import { useRouter } from 'vue-router'
 const auth = useAuthStore()
 const toast = useToastStore()
@@ -13,6 +12,13 @@ const router = useRouter()
 
 const isLoading = ref(false)
 const isDeleteAccountDialogOpen = ref(false)
+const localUserName = ref('')
+const isUpdateDisabled = computed(() => {
+  return localUserName.value === auth.user?.username || localUserName.value.length > 24 || localUserName.value.length < 3
+})
+const firstLetter = computed(() => {
+  return auth.user?.username?.charAt(0).toUpperCase() || ''
+})
 
 const formattedMemberSince = computed(() => {
   try {
@@ -31,6 +37,7 @@ async function loadUserData() {
   try {
     isLoading.value = true
     await auth.getUserProfile()
+    localUserName.value = auth.user?.username || ''
   } catch (error) {
     toast.addToast('Failed to load user data', 'error')
   } finally {
@@ -40,6 +47,20 @@ async function loadUserData() {
 
 function openDeleteAccountDialog() {
   isDeleteAccountDialogOpen.value = true
+}
+
+async function updateProfile() {
+  try {
+    if (!localUserName.value) {
+      toast.addToast('Username cannot be empty', 'warning')
+      return
+    }
+    await auth.updateProfile(localUserName.value)
+    
+    toast.addToast('Profile updated successfully', 'success')
+  } catch (error) {
+    toast.addToast('Failed to update profile', 'error')
+  }
 }
 
 async function deleteAccount() {
@@ -56,40 +77,72 @@ async function deleteAccount() {
 
 <template>
   <div class="profile-page">
-    <div class="profile-container">
-      <div v-if="isLoading" class="loading-state">
-        <div class="loading-spinner"></div>
-        <p>Loading profile...</p>
-      </div>
-
-      <div v-else-if="auth.user" class="profile-content">
+    <Card v-if="isLoading" class="profile-container">
+      <template #header>
         <div class="profile-header">
-          <h1>Profile</h1>
-          <p class="subtitle">Manage your account</p>
+          <Skeleton shape="circle" size="4rem" />
         </div>
+      </template>
 
-        <div class="profile-info">
-          <div class="info-group">
-            <label>Username</label>
-            <div class="info-value">{{ auth.user.username }}</div>
-          </div>
+      <template #title>
+        <Skeleton width="60%" height="2rem" class="profile-title" />
+      </template>
 
-          <div class="info-group">
-            <label>Email</label>
-            <div class="info-value">{{ auth.user.email }}</div>
-          </div>
+      <template #subtitle>
+        <Skeleton width="40%" height="1.25rem" class="profile-subtitle" />
+      </template>
 
-          <div class="info-group">
-            <label>Member Since</label>
-            <div class="info-value">
-              {{ formattedMemberSince }}
-            </div>
-          </div>
-
-          <Button label="Delete Account" @click="openDeleteAccountDialog" severity="danger" />
+      <template #content>
+        <div class="profile-form">
+          <Skeleton width="100%" height="2.5rem" />
+          <Skeleton width="100%" height="2.5rem" />
         </div>
-      </div>
-    </div>
+      </template>
+      <template #footer>
+        <div class="profile-actions">
+          <Skeleton height="2rem" class="profile-action" />
+          <Skeleton height="2rem" class="profile-action" />
+        </div>
+      </template>
+    </Card>
+
+    <Card v-else class="profile-container">
+      <template #header>
+        <div class="profile-header">
+          <Avatar v-if="auth.user?.avatar" :image="auth.user?.avatar" shape="circle" size="xlarge" class="profile-avatar" />
+          <Avatar v-else :label="firstLetter" shape="circle" size="xlarge" class="profile-avatar" />
+        </div>
+      </template>
+
+      <template #title>
+        <h2 class="profile-title">{{ auth.user?.username }}</h2>
+      </template>
+
+      <template #subtitle>
+        <p class="profile-subtitle">{{ 'Member since ' + formattedMemberSince }}</p>
+      </template>
+
+      <template #content>
+        <div class="profile-form">
+          <FloatLabel variant="on">
+            <InputText id="username" v-model="localUserName" />
+            <label for="username">Username</label>
+          </FloatLabel>
+
+          <FloatLabel variant="on">
+            <InputText id="email" :model-value="auth.user?.email || ''" readonly />
+            <label for="email">Email</label>
+          </FloatLabel>
+        </div>
+      </template>
+
+      <template #footer>
+        <div class="profile-actions">
+          <Button label="Delete Account" icon="pi pi-trash" @click="openDeleteAccountDialog" severity="danger" />
+          <Button label="Update Profile" icon="pi pi-save" @click="updateProfile" severity="primary" :disabled="isUpdateDisabled" />
+        </div>
+      </template>
+    </Card>
 
     <Dialog v-model:visible="isDeleteAccountDialogOpen" header="Delete Account" :modal="true">
       <p>Are you sure you want to delete your account?</p>
@@ -104,95 +157,66 @@ async function deleteAccount() {
 <style scoped>
 .profile-page {
   min-height: calc(100vh - 64px);
-  padding: v-bind('spacing.lg');
-  background: v-bind('colors.neutral[50]');
+  padding: v-bind("spacing.xl");
+  background: v-bind("colors.neutral[50]");
 }
 
 .profile-container {
-  max-width: 800px;
+  max-width: 480px;
   margin: 0 auto;
   background: white;
-  border-radius: v-bind('radii.lg');
-  box-shadow: v-bind('shadows.base');
-  border: 1px solid v-bind('colors.neutral[200]');
-  padding: v-bind('spacing.xl');
+  border-radius: v-bind("radii.md");
+  border: 1px solid v-bind("colors.neutral[200]");
+  box-shadow: v-bind("shadows.sm");
 }
 
 .profile-header {
-  margin-bottom: v-bind('spacing.xl');
-}
-
-.profile-header h1 {
-  font-size: v-bind('typography.sizes["2xl"]');
-  font-weight: 600;
-  color: v-bind('colors.neutral[800]');
-  margin-bottom: v-bind('spacing.xs');
-}
-
-.subtitle {
-  color: v-bind('colors.neutral[500]');
-  font-size: v-bind('typography.sizes.base');
-}
-
-.profile-info {
   display: flex;
-  flex-direction: column;
-  gap: v-bind('spacing.lg');
-}
-
-.info-group {
-  display: flex;
-  flex-direction: column;
-  gap: v-bind('spacing.xs');
-}
-
-.info-group label {
-  font-size: v-bind('typography.sizes.sm');
-  font-weight: 500;
-  color: v-bind('colors.neutral[600]');
-}
-
-.info-value {
-  padding: v-bind('spacing.md');
-  background: v-bind('colors.neutral[50]');
-  border-radius: v-bind('radii.base');
-  font-size: v-bind('typography.sizes.base');
-  color: v-bind('colors.neutral[800]');
-}
-
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  min-height: 300px;
-  gap: v-bind('spacing.md');
-  color: v-bind('colors.neutral[500]');
+  padding: v-bind("spacing.xl") 0 0;
 }
 
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid v-bind('colors.neutral[200]');
-  border-top-color: v-bind('colors.primary[500]');
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.profile-avatar {
+  border: 3px solid white;
+  box-shadow: v-bind("shadows.sm");
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.profile-title {
+  margin: 0 auto;
+  font-size: v-bind("typography.sizes.lg");
+  font-weight: 500;
+  text-align: center;
+  color: v-bind("colors.neutral[900]");
 }
 
-@media (max-width: 768px) {
-  .profile-page {
-    padding: v-bind('spacing.md');
-  }
+.profile-subtitle {
+  margin: 0 auto v-bind("spacing.md");
+  text-align: center;
+  color: v-bind("colors.neutral[500]");
+  font-size: v-bind("typography.sizes.sm");
+}
 
-  .profile-container {
-    border-radius: v-bind('radii.base');
-    padding: v-bind('spacing.lg');
-  }
+.profile-form {
+  display: flex; 
+  flex-direction: column;
+  gap: v-bind("spacing.md");
+  padding: 0 v-bind("spacing.xl");
+  margin-bottom: v-bind("spacing.md");
+}
+
+.profile-form input {
+  width: 100%;
+}
+
+.profile-actions {
+  display: flex;
+  gap: v-bind("spacing.md");
+  padding: v-bind("spacing.md") v-bind("spacing.lg");
+  border-top: 1px solid v-bind("colors.neutral[200]");
+}
+
+.profile-actions .p-button, 
+.profile-action {
+  flex: 1;
 }
 </style>
