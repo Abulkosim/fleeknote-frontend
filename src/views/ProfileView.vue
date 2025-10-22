@@ -25,10 +25,10 @@ const firstLetter = computed(() => {
 
 const formattedMemberSince = computed(() => {
   try {
-    if (!auth.user?.createdAt) return 'Not available'
+    if (!auth.user?.createdAt) return null
     return formatDistanceToNow(new Date(auth.user.createdAt), { addSuffix: true })
   } catch (error) {
-    return 'Not available'
+    return null
   }
 })
 
@@ -138,7 +138,7 @@ async function deleteAccount() {
         <h2 class="profile-title">{{ auth.user?.username }}</h2>
       </template>
 
-      <template #subtitle>
+      <template v-if="formattedMemberSince" #subtitle>
         <p class="profile-subtitle">{{ 'Member since ' + formattedMemberSince }}</p>
       </template>
 
