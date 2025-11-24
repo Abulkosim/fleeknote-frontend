@@ -1,120 +1,131 @@
 <script setup lang="ts">
-import { useNotesStore } from '@/stores/notes'
-import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
-import { colors, spacing, shadows, radii, animations } from '@/design/tokens'
-import { PhPencilLine, PhGlobe, PhTrash, PhCopy, PhCheck } from "@phosphor-icons/vue"
-import { useToastStore } from '@/stores/toast'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
-import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import { PhPencilLine, PhGlobe, PhTrash, PhCopy, PhCheck } from '@phosphor-icons/vue'
+import { useNotesStore } from '@/stores/notes'
+import { useToastStore } from '@/stores/toast'
+import { colors, spacing, shadows, radii, animations } from '@/design/tokens'
+import LoadingSpinner from './LoadingSpinner.vue'
 
-const props = defineProps<{
-    noteId: string
-    isPublic: boolean
-    showContextMenu: boolean
-    slug: string
+interface Props {
+  noteId: string
+  isPublic: boolean
+  showContextMenu: boolean
+  slug: string
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  close: []
 }>()
 
-const emit = defineEmits(['close'])
 const notesStore = useNotesStore()
-const authStore = useAuthStore()
+const toastStore = useToastStore()
 const router = useRouter()
-const toast = useToastStore()
+
+const showDeleteDialog = ref(false)
 const copying = ref(false)
 const copied = ref(false)
 
-const showDeleteDialog = ref(false)
-
-async function handleDelete() {
-    try {
-        await notesStore.deleteNote(props.noteId)
-        router.push('/notes')
-        showDeleteDialog.value = false
-        notesStore.clearCurrentNote()
-        emit('close')
-    } catch (error) {
-        console.error('Failed to delete note:', error)
-        toast.addToast('Failed to delete note', 'error')
-    }
+const handleEdit = () => {
+  router.push(`/notes/${props.noteId}`)
+  emit('close')
 }
 
-function openDeleteDialog() {
-    showDeleteDialog.value = true
+const handleTogglePublish = async () => {
+  try {
+    await notesStore.togglePublish(props.noteId)
+    const message = props.isPublic ? 'Note unpublished' : 'Note published'
+    toastStore.addToast(message, 'success')
+  } catch {
+    const message = props.isPublic ? 'Failed to unpublish note' : 'Failed to publish note'
+    toastStore.addToast(message, 'error')
+  }
+  emit('close')
 }
 
-async function handleTogglePublish() {
-    try {
-        await notesStore.togglePublish(props.noteId)
-        toast.addToast(props.isPublic ? 'Note published' : 'Note unpublished', 'success')
-    } catch (error) {
-        toast.addToast(props.isPublic ? 'Failed to unpublish note' : 'Failed to publish note', 'error')
-    }
+const handleCopyLink = async () => {
+  if (copying.value || copied.value) return
+
+  try {
+    copying.value = true
+    const { username, slug } = await notesStore.getNoteLink(props.noteId)
+    const link = `${window.location.origin}/${username}/notes/${slug}`
+    await navigator.clipboard.writeText(link)
+    toastStore.addToast('Link copied to clipboard', 'success')
+    copied.value = true
+    setTimeout(() => {
+      copied.value = false
+    }, 2000)
+  } catch {
+    toastStore.addToast('Failed to copy link', 'error')
+  } finally {
+    copying.value = false
+  }
+}
+
+const openDeleteDialog = () => {
+  showDeleteDialog.value = true
+}
+
+const handleDelete = async () => {
+  try {
+    await notesStore.deleteNote(props.noteId)
+    notesStore.clearCurrentNote()
+    showDeleteDialog.value = false
     emit('close')
-}
-
-function handleEdit() {
-    router.push(`/notes/${props.noteId}`)
-    emit('close')
-}
-
-async function handleCopyLink() {
-    try {
-        copying.value = true
-        const { username, slug } = await notesStore.getNoteLink(props.noteId)
-        const link = `${window.location.origin}/${username}/notes/${slug}`
-        navigator.clipboard.writeText(link)
-        toast.addToast('Link copied to clipboard', 'success')
-    } catch {
-        toast.addToast('Failed to copy link', 'error')
-    } finally {
-        copying.value = false
-        copied.value = true
-        setTimeout(() => {
-            copied.value = false
-        }, 2000)
-    }
+    router.push('/notes')
+  } catch (error) {
+    console.error('Failed to delete note:', error)
+    toastStore.addToast('Failed to delete note', 'error')
+  }
 }
 </script>
 
 <template>
-    <div v-if="showContextMenu" class="context-menu" @click.stop>
-        <button class="menu-item" @click="handleEdit">
-            <PhPencilLine :size="20" class="menu-item-icon" />
-            Edit
-        </button>
-        <button class="menu-item" @click="handleTogglePublish">
-            <PhGlobe :size="20" class="menu-item-icon" />
-            {{ isPublic ? 'Make Private' : 'Publish' }}
-        </button>
-        <button v-if="isPublic" class="menu-item" @click="handleCopyLink" :disabled="copying || copied">
-            <template v-if="copying">
-                <LoadingSpinner size="md" class="menu-item-icon" />
-                Copying...
-            </template>
-            <template v-else-if="copied">
-                <PhCheck :size="20" class="menu-item-icon" />
-                Copied!
-            </template>
-            <template v-else>
-                <PhCopy :size="20" class="menu-item-icon" />
-                Copy Link
-            </template>
-        </button>
-        <button class="menu-item delete" @click="openDeleteDialog">
-            <PhTrash :size="20" class="menu-item-icon" />
-            Delete
-        </button>
-    </div>
+  <div v-if="showContextMenu" class="context-menu" @click.stop>
+    <button class="menu-item" @click="handleEdit">
+      <PhPencilLine :size="20" class="menu-item-icon" />
+      Edit
+    </button>
+    <button class="menu-item" @click="handleTogglePublish">
+      <PhGlobe :size="20" class="menu-item-icon" />
+      {{ isPublic ? 'Make Private' : 'Publish' }}
+    </button>
+    <button
+      v-if="isPublic"
+      class="menu-item"
+      :disabled="copying || copied"
+      @click="handleCopyLink"
+    >
+      <template v-if="copying">
+        <LoadingSpinner size="md" class="menu-item-icon" />
+        Copying...
+      </template>
+      <template v-else-if="copied">
+        <PhCheck :size="20" class="menu-item-icon" />
+        Copied!
+      </template>
+      <template v-else>
+        <PhCopy :size="20" class="menu-item-icon" />
+        Copy Link
+      </template>
+    </button>
+    <button class="menu-item delete" @click="openDeleteDialog">
+      <PhTrash :size="20" class="menu-item-icon" />
+      Delete
+    </button>
+  </div>
 
-    <Dialog v-model:visible="showDeleteDialog" modal header="Delete Note" :style="{ width: '30rem' }">
-        <p>Are you sure you want to delete this note?</p>
-        <template #footer>
-            <Button label="Cancel" @click="showDeleteDialog = false" severity="secondary" text />
-            <Button label="Delete" severity="danger" @click="handleDelete" />
-        </template>
-    </Dialog>
+  <Dialog v-model:visible="showDeleteDialog" modal header="Delete Note" :style="{ width: '30rem' }">
+    <p>Are you sure you want to delete this note?</p>
+    <template #footer>
+      <Button label="Cancel" severity="secondary" text @click="showDeleteDialog = false" />
+      <Button label="Delete" severity="danger" @click="handleDelete" />
+    </template>
+  </Dialog>
 </template>
 
 <style scoped>
@@ -142,7 +153,13 @@ async function handleCopyLink() {
     text-align: left;
     cursor: pointer;
     color: v-bind('colors.neutral[700]');
+    border-radius: v-bind('radii.base');
     transition: v-bind('animations.transitions.base');
+}
+
+.menu-item:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
 .menu-item-icon {

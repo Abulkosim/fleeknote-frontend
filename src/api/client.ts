@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useRouter } from 'vue-router'
+import router from '@/router'
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
@@ -17,12 +17,11 @@ apiClient.interceptors.request.use(config => {
 })
 
 apiClient.interceptors.response.use(
-  // TODO: fix router usage
   response => response,
   error => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
-      useRouter().push('/login')
+      router.push('/login')
     }
     return Promise.reject(error)
   }

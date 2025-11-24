@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { colors, animations } from '@/design/tokens'
+import { colors } from '@/design/tokens'
 
 defineProps<{
     size?: 'sm' | 'md' | 'lg' | 'xl'
