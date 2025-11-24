@@ -58,6 +58,32 @@ watch(note, saveToLocalStorage, { deep: true })
 
         <section class="demo-section">
             <div class="demo-container">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <PhPencilLine :size="24" class="feature-icon" />
+                        </div>
+                        <h3 class="feature-title">Distraction-free</h3>
+                        <p class="feature-description">Clean interface that gets out of your way</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <PhRocket :size="24" class="feature-icon" />
+                        </div>
+                        <h3 class="feature-title">Lightning fast</h3>
+                        <p class="feature-description">Instant saving and seamless performance</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <PhSparkle :size="24" class="feature-icon" />
+                        </div>
+                        <h3 class="feature-title">Share easily</h3>
+                        <p class="feature-description">One click to share with the world</p>
+                    </div>
+                </div>
+
                 <div class="demo-content">
                     <div class="demo-editor">
                         <div class="editor-header">
@@ -82,32 +108,6 @@ watch(note, saveToLocalStorage, { deep: true })
                                 class="demo-content"
                             />
                         </div>
-                    </div>
-                </div>
-                
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon-wrapper">
-                            <PhPencilLine :size="24" class="feature-icon" />
-                        </div>
-                        <h3 class="feature-title">Distraction-free</h3>
-                        <p class="feature-description">Clean interface that gets out of your way</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon-wrapper">
-                            <PhRocket :size="24" class="feature-icon" />
-                        </div>
-                        <h3 class="feature-title">Lightning fast</h3>
-                        <p class="feature-description">Instant saving and seamless performance</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon-wrapper">
-                            <PhSparkle :size="24" class="feature-icon" />
-                        </div>
-                        <h3 class="feature-title">Share easily</h3>
-                        <p class="feature-description">One click to share with the world</p>
                     </div>
                 </div>
             </div>
@@ -195,7 +195,7 @@ watch(note, saveToLocalStorage, { deep: true })
 }
 
 .demo-section {
-    padding: v-bind('spacing["2xl"]') 0;
+    padding: 0 0 v-bind('spacing["2xl"]');
     background: white;
 }
 
@@ -206,7 +206,7 @@ watch(note, saveToLocalStorage, { deep: true })
 }
 
 .demo-content {
-    margin-bottom: v-bind('spacing["2xl"]');
+    margin-top: v-bind('spacing["2xl"]');
     animation: fadeInUp 0.8s ease-out 0.4s both;
 }
 
@@ -305,7 +305,6 @@ watch(note, saveToLocalStorage, { deep: true })
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: v-bind('spacing.xl');
-    margin-top: v-bind('spacing["2xl"]');
 }
 
 .feature-card {
