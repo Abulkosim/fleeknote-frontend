@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
+import { useNotesStore } from '@/stores/notes'
 import { useRouter } from 'vue-router'
 import { colors, spacing, typography, radii } from '@/design/tokens'
-import { useNotesStore } from '@/stores/notes'
 
-const auth = useAuthStore()
-const noteStore = useNotesStore()
+const authStore = useAuthStore()
+const notesStore = useNotesStore()
 const router = useRouter()
 
-function handleLogout() {
-  noteStore.clearCurrentNote()
-  auth.logout()
+const handleLogout = () => {
+  notesStore.clearCurrentNote()
+  authStore.logout()
   router.push('/')
 }
 </script>
@@ -20,7 +20,7 @@ function handleLogout() {
     <div class="header-content">
       <router-link to="/" class="logo">FleekNote</router-link>
 
-      <div v-if="auth.isAuthenticated" class="nav">
+      <div v-if="authStore.isAuthenticated" class="nav">
         <router-link to="/profile" class="nav-link">Profile</router-link>
         <button @click="handleLogout" class="logout-btn">Logout</button>
       </div>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import Skeleton from 'primevue/skeleton';
 import { PhNotePencil, PhDotsThreeVertical } from "@phosphor-icons/vue";
 import { useNotesStore } from '@/stores/notes'
-import { useRouter } from 'vue-router'
+import { useToastStore } from '@/stores/toast'
 import { colors, spacing, typography, shadows, radii, animations } from '@/design/tokens'
 import NoteContextMenu from '@/components/NoteContextMenu.vue'
-import { useToastStore } from '@/stores/toast'
 
 const notesStore = useNotesStore()
 const router = useRouter()
@@ -82,12 +82,6 @@ onUnmounted(() => {
         <div class="sidebar-header">
             <h2 class="sidebar-title">Notes</h2>
             <div class="sidebar-actions">
-                <!-- TODO: Fix sidebar toggle -->
-                <!-- 
-                    <div class="sidebar-toggle" @click="toggleSidebar">
-                        <PhTextOutdent class="sidebar-icon" :size="20" />
-                    </div> 
-                -->
                 <div class="new-note" @click="createNewNote">
                     <PhNotePencil class="sidebar-icon" :size="20" />
                 </div>
