@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import apiClient from '@/api/client'
+import { extractErrorMessage } from '@/utils/errors'
 
 interface PublicNote {
     _id: string
@@ -27,9 +28,9 @@ export const usePublicNotesStore = defineStore('publicNotes', () => {
                 createdAt: new Date(note.createdAt),
                 updatedAt: new Date(note.updatedAt)
             }))
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to fetch public notes'
-            throw error.value
+        } catch (err: unknown) {
+            error.value = extractErrorMessage(err, 'Failed to fetch public notes')
+            throw err
         } finally {
             isLoading.value = false
         }
@@ -45,9 +46,9 @@ export const usePublicNotesStore = defineStore('publicNotes', () => {
                 updatedAt: new Date(data.updatedAt)
             }
             return currentNote.value
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to fetch note'
-            throw error.value
+        } catch (err: unknown) {
+            error.value = extractErrorMessage(err, 'Failed to fetch note')
+            throw err
         } finally {
             isLoading.value = false
         }

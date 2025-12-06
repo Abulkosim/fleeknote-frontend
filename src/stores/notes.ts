@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import apiClient from '@/api/client'
+import { extractErrorMessage } from '@/utils/errors'
 
 interface Note {
     _id: string
@@ -40,9 +41,9 @@ export const useNotesStore = defineStore('notes', () => {
                 createdAt: new Date(note.createdAt),
                 updatedAt: new Date(note.updatedAt)
             }))
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to fetch notes'
-            throw error.value
+        } catch (err: unknown) {
+            error.value = extractErrorMessage(err, 'Failed to fetch notes')
+            throw err
         } finally {
             isLoading.value = false
         }
@@ -58,9 +59,9 @@ export const useNotesStore = defineStore('notes', () => {
             }
             currentNote.value = note
             return note
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to fetch note'
-            throw error.value
+        } catch (err: unknown) {
+            error.value = extractErrorMessage(err, 'Failed to fetch note')
+            throw err
         }
     }
 
@@ -74,9 +75,9 @@ export const useNotesStore = defineStore('notes', () => {
             }
             notes.value.unshift(newNote)
             return newNote
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to create note'
-            throw error.value
+        } catch (err: unknown) {
+            error.value = extractErrorMessage(err, 'Failed to create note')
+            throw err
         }
     }
 
@@ -100,9 +101,9 @@ export const useNotesStore = defineStore('notes', () => {
                 notes.value[index] = updatedNote
             }
             return updatedNote
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to update note'
-            throw error.value
+        } catch (err: unknown) {
+            error.value = extractErrorMessage(err, 'Failed to update note')
+            throw err
         }
     }
 
@@ -120,9 +121,9 @@ export const useNotesStore = defineStore('notes', () => {
                 notes.value[index] = updatedNote
             }
             return updatedNote
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to toggle publish status'
-            throw error.value
+        } catch (err: unknown) {
+            error.value = extractErrorMessage(err, 'Failed to toggle publish status')
+            throw err
         }
     }
 
@@ -130,9 +131,9 @@ export const useNotesStore = defineStore('notes', () => {
         try {
             await apiClient.delete(`/notes/${id}`)
             notes.value = notes.value.filter(note => note._id !== id)
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to delete note'
-            throw error.value
+        } catch (err: unknown) {
+            error.value = extractErrorMessage(err, 'Failed to delete note')
+            throw err
         }
     }
 
@@ -140,7 +141,7 @@ export const useNotesStore = defineStore('notes', () => {
         try {
             const { data } = await apiClient.get(`/notes/${id}/link`)
             return data
-        } catch (err: any) {
+        } catch (err: unknown) {
             throw err
         }
     }

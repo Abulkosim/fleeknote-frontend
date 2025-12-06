@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import apiClient from '@/api/client'
+import { extractErrorMessage } from '@/utils/errors'
 
 interface User {
     id: string
@@ -29,9 +30,9 @@ export const useAuthStore = defineStore('auth', () => {
             token.value = data.token
             localStorage.setItem('token', data.token)
             localStorage.setItem('username', data.user.username)
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Login failed'
-            throw error.value
+        } catch (err: unknown) {
+            error.value = extractErrorMessage(err, 'Login failed')
+            throw err  
         }
     }
 
@@ -47,9 +48,9 @@ export const useAuthStore = defineStore('auth', () => {
             token.value = data.token
             localStorage.setItem('token', data.token)
             localStorage.setItem('username', data.user.username)
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Registration failed'
-            throw error.value
+        } catch (err: unknown) {
+            error.value = extractErrorMessage(err, 'Registration failed')
+            throw err  
         }
     }
 

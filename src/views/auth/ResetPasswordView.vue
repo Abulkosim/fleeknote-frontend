@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useToastStore } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth'
 import { spacing, typography, colors, shadows, radii, animations, focusRings } from '@/design/tokens'
+import { extractErrorMessage } from '@/utils/errors'
 
 const auth = useAuthStore()
 const password = ref('')
@@ -20,8 +21,8 @@ async function handleSubmit() {
         await auth.resetPassword(route.params.token as string, password.value)
         router.push('/login')
         toast.addToast('Password reset successful', 'success')
-    } catch (err) {
-        error.value = 'Failed to send reset email'
+    } catch (err: unknown) {
+        error.value = extractErrorMessage(err, 'Failed to reset password')
         toast.addToast(error.value, 'error')
     } finally {
         isLoading.value = false
