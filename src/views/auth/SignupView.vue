@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
 import { spacing, typography, colors, shadows, radii, animations, focusRings } from '@/design/tokens'
+import { extractErrorMessage } from '@/utils/errors'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -24,8 +25,8 @@ async function handleSubmit() {
         error.value = ''
         await auth.signup(form.value.username, form.value.email, form.value.password)
         router.push('/notes')
-    } catch (err: any) {
-        error.value = err.message || 'Failed to create account'
+    } catch (err: unknown) {
+        error.value = extractErrorMessage(err, 'Failed to create account')
         toast.addToast(error.value, 'error')
     } finally {
         isLoading.value = false

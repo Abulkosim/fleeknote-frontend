@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useToastStore } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth'
 import { spacing, typography, colors, shadows, radii, animations, focusRings } from '@/design/tokens'
+import { extractErrorMessage } from '@/utils/errors'
 
 const auth = useAuthStore()
 const email = ref('')
@@ -17,9 +18,9 @@ async function handleSubmit() {
         error.value = ''
         await auth.forgotPassword(email.value)
         isEmailSent.value = true
-    } catch (err: any) {
-        error.value = 'Failed to send reset email'
-        toast.addToast(err.response?.data?.message || error.value, 'error')
+    } catch (err: unknown) {
+        error.value = extractErrorMessage(err, 'Failed to send reset email')
+        toast.addToast(error.value, 'error')
     } finally {
         isLoading.value = false
     }

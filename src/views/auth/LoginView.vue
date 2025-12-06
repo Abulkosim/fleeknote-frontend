@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
 import { spacing, typography, colors, shadows, radii, animations, focusRings } from '@/design/tokens'
+import { extractErrorMessage } from '@/utils/errors';
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -23,8 +24,8 @@ async function handleSubmit() {
     error.value = ''
     await auth.login(form.value.email, form.value.password)
     router.push('/notes')
-  } catch (err) {
-    error.value = (err as Error).message || 'Failed to sign in'
+  } catch (err: unknown) {
+    error.value = extractErrorMessage(err, 'Failed to sign in')
     toast.addToast(error.value, 'error')
   } finally {
     isLoading.value = false
