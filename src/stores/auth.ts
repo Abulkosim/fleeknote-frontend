@@ -8,7 +8,8 @@ interface User {
     username: string
     email: string
     createdAt: string
-    updatedAt: string,
+    updatedAt: string
+    role: string
     avatar: string | null
 }
 
@@ -29,6 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
             user.value = data.user
             token.value = data.token
             localStorage.setItem('token', data.token)
+            localStorage.setItem('user', JSON.stringify(data.user))
             localStorage.setItem('username', data.user.username)
         } catch (err: unknown) {
             error.value = extractErrorMessage(err, 'Login failed')
@@ -47,6 +49,7 @@ export const useAuthStore = defineStore('auth', () => {
             user.value = data.user
             token.value = data.token
             localStorage.setItem('token', data.token)
+            localStorage.setItem('user', JSON.stringify(data.user))
             localStorage.setItem('username', data.user.username)
         } catch (err: unknown) {
             error.value = extractErrorMessage(err, 'Registration failed')
@@ -79,6 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = null
 
         localStorage.removeItem('token')
+        localStorage.removeItem('user')
         localStorage.removeItem('username')
     }
 
@@ -87,6 +91,7 @@ export const useAuthStore = defineStore('auth', () => {
             try {
                 const { data } = await apiClient.get('/auth/me')
                 user.value = data
+                localStorage.setItem('user', JSON.stringify(data))
             } catch (error) {
                 console.error('Load user error:', error)
                 logout()
