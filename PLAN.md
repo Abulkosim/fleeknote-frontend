@@ -17,8 +17,6 @@ A fast, minimalistic web-based note-taking application that provides a native ap
   - Left: Note list/menu
   - Right: Current note editor
 - Full CRUD operations (Create, Read, Update, Delete)
-
-### Future Features (Phase 2)
 - Public note sharing
 - Minimalist blogging platform
 - Access via: `fleeknote.com/username/note_id`
@@ -29,24 +27,11 @@ A fast, minimalistic web-based note-taking application that provides a native ap
 - Vue.js 3
 - Composition API
 - TypeScript
-- Focus on responsive and fast UI
 
 ### Backend
 - Express.js
 - MongoDB
 - MongoDB Atlas Cloud
-
-## Design Philosophy
-- Minimize cognitive load for users
-- Professional and minimalistic UI/UX
-- Native app-like performance
-- Reliability and bug-free experience
-
-## Project Priorities
-1. Speed and Performance
-2. User Experience
-3. Reliability
-4. Feature Completeness
 
 ## Implementation Phases
 
