@@ -1,0 +1,17 @@
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: Dockerfile.dev
+    container_name: fleeknote-frontend-dev
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "5173:5173"
+    volumes:
+      - ..:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0 --port 5173
